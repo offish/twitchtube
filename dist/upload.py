@@ -1,23 +1,18 @@
-#!/usr/bin/python
-
-import dist.config
-from dist.logging import log
-from dist.config import PATH
-import argparse
 import http.client as httplib
-import httplib2
+import json
 import os
 import random
 import time
-import json
 
-# import google.oauth2.credentials
-import google_auth_oauthlib.flow
+import google.oauth2.credentials
+import httplib2
+from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from googleapiclient.http import MediaFileUpload
-from google_auth_oauthlib.flow import InstalledAppFlow
-import google.oauth2.credentials
+
+from .config import PATH
+from .logging import log
 
 # Explicitly tell the underlying HTTP transport library not to retry, since
 # we are handling retry logic ourselves.
@@ -197,7 +192,6 @@ def resumableUpload(request):
             sleep_seconds = random.random() * max_sleep
             log('warn', 'Sleeping %f seconds and then retrying...' % sleep_seconds)
             time.sleep(sleep_seconds)
-
 
 
 def upload_video_to_youtube(config: dict):

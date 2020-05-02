@@ -1,10 +1,12 @@
-from dist.config import TAGS, DESCRIPTIONS, PATH
 from datetime import date
 import json
+
+from .config import TAGS, DESCRIPTIONS, CLIP_PATH
 
 
 def get_date():
     return date.today().strftime("%b-%d-%Y")
+
 
 def create_video_config(game, streamers):
     config = {
@@ -32,11 +34,11 @@ def get_description(game, streamers):
 
 
 def get_title(game):
-    title = json.loads(open(f'{PATH}/clips/{get_date()}/{game}/clips.json', 'r').read())
+    title = json.loads(open(f'{CLIP_PATH.format(get_date(), game)}/clips.json', 'r').read())
 
     for i in title:
         return f"{title[i]['title']} - {game} Highlights #"
 
 
 def get_file(game):
-    return f"{PATH}/clips/{get_date()}/{game}/rendered.mp4"
+    return f"{CLIP_PATH.format(get_date(), game)}/rendered.mp4"

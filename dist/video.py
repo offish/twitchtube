@@ -1,6 +1,8 @@
-from moviepy.editor import VideoFileClip, concatenate_videoclips
-from dist.logging import log
 import os
+
+from moviepy.editor import VideoFileClip, concatenate_videoclips
+
+from .logging import log
 
 
 def get_clip_files(path: str):
@@ -13,14 +15,13 @@ def get_clip_files(path: str):
 
 
 def render(path: str):
-    
     log('info', f"Going to render video in {path}\n")
 
     videos = []
 
     for video in get_clip_files(path):
 
-        movie = VideoFileClip(video, target_resolution=(720,1280))
+        movie = VideoFileClip(video, target_resolution=(720, 1280))
         name = video.replace(path, "") \
             .replace("_", " ") \
             .replace("\\", "")

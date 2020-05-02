@@ -24,7 +24,7 @@ while True:
 
                 clips = get_clips(game, VIDEO_LENGTH, path)
 
-                if clips != False:
+                if clips:
                     log('info', f'Starting to make a video for {game}')
                     names = download_clips(clips, VIDEO_LENGTH, path)
                     config = create_video_config(game, names)
@@ -43,4 +43,3 @@ while True:
             log('info', f'Already made a video for {game}. Rechecking in an hour.')
 
     sleep(3600)
-    

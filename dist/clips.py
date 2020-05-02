@@ -1,11 +1,12 @@
-from dist.config import CLIENT_ID, PARAMS, HEADERS
-from dist.logging import log
-from math import floor
-import urllib.request
-import requests
 import json
-import sys
 import re
+import urllib.request
+from math import floor
+
+import requests
+
+from .config import CLIENT_ID, PARAMS, HEADERS
+from .logging import log
 
 
 def get_clip_data(slug: str):
@@ -40,8 +41,7 @@ def download_clip(clip: str, basepath: str):
 
     log('info', f'Downloading clip with slug: {slug}')
     log('info', f'Saving "{clip_title}" as "{out_filename}"')
-    urllib.request.urlretrieve(mp4_url, output_path, \
-        reporthook=get_progress)
+    urllib.request.urlretrieve(mp4_url, output_path, reporthook=get_progress)
     log('info', 'Clip were successfully downloaded')
 
 
@@ -83,7 +83,7 @@ def get_clips(game: str, length: int, path: str):
     else:
         # error hos twitch eller timed out
         print(response)
-        #log('error', response)
+        # log('error', response)
 
         return False
 
