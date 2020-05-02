@@ -1,11 +1,12 @@
-from dist.config import CLIENT_ID, PARAMS, HEADERS
-from dist.logging import log
-from math import floor
-import urllib.request
-import requests
 import json
-import sys
 import re
+import urllib.request
+from math import floor
+
+import requests
+
+from .config import CLIENT_ID, PARAMS, HEADERS
+from .logging import log
 
 
 def get_clip_data(slug: str):
