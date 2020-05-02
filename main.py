@@ -29,7 +29,7 @@ while True:
                     names = download_clips(clips, VIDEO_LENGTH, path)
                     config = create_video_config(game, names)
                     
-                    render(game, path)
+                    render(path)
                     upload_video_to_youtube(config)
 
                     del names
