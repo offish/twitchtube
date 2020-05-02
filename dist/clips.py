@@ -41,8 +41,7 @@ def download_clip(clip: str, basepath: str):
 
     log('info', f'Downloading clip with slug: {slug}')
     log('info', f'Saving "{clip_title}" as "{out_filename}"')
-    urllib.request.urlretrieve(mp4_url, output_path, \
-        reporthook=get_progress)
+    urllib.request.urlretrieve(mp4_url, output_path, reporthook=get_progress)
     log('info', 'Clip were successfully downloaded')
 
 
@@ -84,7 +83,7 @@ def get_clips(game: str, length: int, path: str):
     else:
         # error hos twitch eller timed out
         print(response)
-        #log('error', response)
+        # log('error', response)
 
         return False
 
