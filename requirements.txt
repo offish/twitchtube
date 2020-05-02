@@ -1,0 +1,4 @@
+moviepy==1.0.0
+colorama
+httplib2
+google-auth-oauthlib
