@@ -12,7 +12,7 @@ def get_clip_files(path: str):
     return clips
 
 
-def render(game, path: str):
+def render(path: str):
     
     log('info', f"Going to render video in {path}\n")
 
