@@ -2,3 +2,5 @@ moviepy==1.0.0
 colorama
 httplib2
 google-auth-oauthlib
+google-api-python-client
+google-auth
