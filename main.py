@@ -8,6 +8,7 @@ from os.path import isdir
 from pathlib import Path
 from time import sleep
 
+log = log()
 
 while True:
 
@@ -25,7 +26,7 @@ while True:
                 clips = get_clips(game, VIDEO_LENGTH, path)
 
                 if clips:
-                    log('info', f'Starting to make a video for {game}')
+                    log.info(f'Starting to make a video for {game}')
                     names = download_clips(clips, VIDEO_LENGTH, path)
                     config = create_video_config(game, names)
                     
@@ -34,12 +35,11 @@ while True:
 
                     del names
                     del config
-                    break
 
                 else:
-                    log('error', f'There was an error or timeout on Twitch\'s end, retrying... {i}/{tries}')
+                    log.error(f'There was an error or timeout on Twitch\'s end, retrying... {i + 1}/{tries}')
 
         else:
-            log('info', f'Already made a video for {game}. Rechecking in an hour.')
+            log.info(f'Already made a video for {game}. Rechecking in an hour.')
 
     sleep(3600)
