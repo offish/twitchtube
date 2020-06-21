@@ -14,6 +14,8 @@ from googleapiclient.http import MediaFileUpload
 from .config import PATH
 from .logging import log
 
+log = log()
+
 # Explicitly tell the underlying HTTP transport library not to retry, since
 # we are handling retry logic ourselves.
 httplib2.RETRIES = 1
@@ -58,7 +60,7 @@ def getAuthenticatedService(CREDENTIALS_FILE):
     flow = InstalledAppFlow.from_client_secrets_file(
         CLIENT_SECRETS_FILE, SCOPES, redirect_uri='urn:ietf:wg:oauth:2.0:oob')
     auth_url, _ = flow.authorization_url(prompt='consent')
-    log('error', 'Please go to this URL: {}'.format(auth_url))
+    log.error('Please go to this URL: {}'.format(auth_url))
 
     code = input('Enter the authorization code: ')
     credentials = flow.fetch_token(code=code)
@@ -164,11 +166,11 @@ def resumableUpload(request):
     retry = 0
     while response is None:
         try:
-            log('info', 'Uploading file...')
+            log.info('Uploading file...')
             status, response = request.next_chunk()
             if response is not None:
                 if 'id' in response:
-                    log('info', 'Video id "%s" was successfully uploaded.\n' %
+                    log.info('Video id "%s" was successfully uploaded.\n' %
                           response['id'])
                     return response['id']
                 else:
@@ -183,14 +185,14 @@ def resumableUpload(request):
             error = 'A retriable error occurred: %s' % e
 
         if error is not None:
-            log('error', error)
+            log.error(error)
             retry += 1
             if retry > MAX_RETRIES:
                 exit('No longer attempting to retry.')
 
             max_sleep = 2 ** retry
             sleep_seconds = random.random() * max_sleep
-            log('warn', 'Sleeping %f seconds and then retrying...' % sleep_seconds)
+            log.warn('Sleeping %f seconds and then retrying...' % sleep_seconds)
             time.sleep(sleep_seconds)
 
 
@@ -220,7 +222,7 @@ def upload_video_to_youtube(config: dict):
         if 'thumbnail' in config:
             thumbnails_set(youtube, config['thumbnail'], videoId=videoId)
     except HttpError as e:
-        log('error', 'An HTTP error %d occurred:\n%s' % (e.resp.status, e.content))
+        log.error('An HTTP error %d occurred:\n%s' % (e.resp.status, e.content))
 
 
 def resumable_upload_thumbnails(request, method='insert'):
@@ -229,13 +231,13 @@ def resumable_upload_thumbnails(request, method='insert'):
     retry = 0
     while response is None:
         try:
-            log('info', "Uploading thumbnail...")
+            log.info('Uploading thumbnail...')
             status, response = request.next_chunk()
             if response is not None:
                 if method == 'insert' and 'id' in response:
-                    log('info', response)
+                    log.info(response)
                 elif method != 'insert' or 'id' not in response:
-                    log('info', response)
+                    log.info(response)
                 else:
                     exit("The upload failed with an unexpected response: %s" % response)
         except HttpError as e:
@@ -248,12 +250,12 @@ def resumable_upload_thumbnails(request, method='insert'):
             error = "A retriable error occurred: %s" % e
 
         if error is not None:
-            log('error', error)
+            log.error(error)
             retry += 1
             if retry > MAX_RETRIES:
                 exit("No longer attempting to retry.")
 
             max_sleep = 2 ** retry
             sleep_seconds = random.random() * max_sleep
-            log('warn', "Sleeping %f seconds and then retrying..." % sleep_seconds)
+            log.warn('Sleeping %f seconds and then retrying...' % sleep_seconds)
             time.sleep(sleep_seconds)
