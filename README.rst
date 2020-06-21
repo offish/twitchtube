@@ -19,9 +19,15 @@ Installation
 Setup
 -----
 
-In the `config.py` file you need to have set the `CLIENT_ID` to your Twitch client id.
+In the `config.py` file you need to have set the `CLIENT_ID` to your Twitch Client ID.
+
+Get `OAUTH_TOKEN` by going to `twitchapps`_.
+
+https://dev.twitch.tv/console/apps/create
 
 You need to have a `client_secret.json` file in dist that looks something like this.
+
+.. _twitchapps: https://twitchapps.com/tokengen/
 
 .. code-block:: json
 
@@ -53,7 +59,7 @@ The script starts by checking every game listed in the config. It will then crea
 
 Example
 -------
-`Here`_ is an example of how the videos turn out on YouTube (made by me with this repo)
+`Here`_ is an example of how the videos turn out on YouTube (made with this repo)
 
 .. _Here: https://www.youtube.com/channel/UCd0wttXr03lIcTLv38U5d-w
 
