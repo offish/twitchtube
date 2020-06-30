@@ -20,7 +20,9 @@ def create_video_config(game, streamers):
 
 
 def get_tags(game):
-    return TAGS[game]
+    if game in TAGS:
+        return TAGS[game]
+    return 'twitchtube, made by offish'
 
 
 def get_description(game, streamers):
@@ -29,7 +31,9 @@ def get_description(game, streamers):
     for name in streamers:
         names += f'https://twitch.tv/{name}\n'
 
-    return DESCRIPTIONS[game].format(names)
+    if game in DESCRIPTIONS:
+        return DESCRIPTIONS[game].format(names)
+    return f'Made with twitchtube by offish\n{names}'
 
 
 def get_title(game):
