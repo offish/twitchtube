@@ -89,7 +89,7 @@ def get_clips(game: str, length: float, path: str):
         return False
 
 
-def download_clips(data: dict, length: int, path: str):
+def download_clips(data: dict, length: float, path: str):
     length *= 60
     names = []
 
