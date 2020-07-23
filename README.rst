@@ -10,61 +10,66 @@ Automatically make a compilation of the most viewed daily clips on Twitch, and u
     :depth: 1
 
 Installation
-------------
+============
 
 .. code-block:: text
 
     pip install -r requirements.txt 
 
 Setup
------
+=====
+Creating your Twitch Application
+--------------------------------
+Go to https://dev.twitch.tv/console and register a new application.
+The name of the application does not matter. Set "OAuth Redirect URLs" to https://twitchapps.com/tokengen/
+Set category to Application Integration or Other. 
+You will now see your Client ID, copy this ID.
+Go to config.py under dist, find CLIENT_ID and paste it inside apostrophes.
 
-In the `config.py` file you need to have set the `CLIENT_ID` to your Twitch Client ID.
+Getting your OAuth Token
+------------------------
+Now head over to https://twitchapps.com/tokengen/
+Paste in your Client ID, scopes does not matter in our case. 
+Click "Connect" and then authorize with Twitch.
+Copy your OAuth Token, go to config.py, find OAUTH_TOKEN and paste it inside the apostrophes.
 
-Get `OAUTH_TOKEN` by going to `twitchapps`_.
+Creating your Google Project
+----------------------------
+Go to https://console.cloud.google.com/ and create a new project.
+Name does not matter.
 
-https://dev.twitch.tv/console/apps/create
+Enabling YouTube Data API v3
+----------------------------
+Click on the menu on the left side of your screen and navigate to "APIs & Services".
+Hover over this button and click "Library".
+Search for "YouTube Data API v3" and click the first result.
+Enable this API. 
 
-You need to have a `client_secret.json` file in dist that looks something like this.
-
-.. _twitchapps: https://twitchapps.com/tokengen/
-
-.. code-block:: json
-
-    {
-        "installed": {
-            "client_id": "example.apps.googleusercontent.com",
-            "project_id": "example-111111",
-            "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-            "token_uri": "https://oauth2.googleapis.com/token",
-            "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-            "client_secret": "example",
-            "redirect_uris": [
-                "urn:ietf:wg:oauth:2.0:oob",
-                "http://localhost"
-            ]
-        }
-    }
-
-And you also need a `credentials.json` file under the credentials folder that looks something like this.
-
-.. code-block:: json
-
-    "{\"token\": \"example\", \"expiry\": null, \"_scopes\": null, \"_refresh_token\": \"example\", \"_id_token\": null, \"_token_uri\": \"https://oauth2.googleapis.com/token\", \"_client_id\": \"example.apps.googleusercontent.com\", \"_client_secret\": \"example\"}"
-
+Getting your client_secret
+--------------------------
+When you've clicked enable you should now be on the "Overview" tab.
+Click "Credentials" and then "+ Create Credentials".
+You will now see 3 options, click "OAuth client ID". 
+Now you might need to configure consent screen.
+If you need to configure this, click "External" and then "Create".
+Write something in the application name field, might be wise to name it something you will remember like "twitchtube" or "YouTube Twitch Bot".
+Now you will see your application, go to "Credentials" again and click "+ Create Credentials" and then "OAuth client ID".
+Set application type to Desktop app and name it whatever.
+Click Ok, and click the download icon.
+Open the JSON file that gets downloaded, select everything and paste it into the client_secret file under dist.
 
 How it works
-------------
+============
 The script starts by checking every game listed in the config. It will then create a folder with the current date as the name and inside of this folder it will create another folder for the first game in the list (also specified in the config). It will send a request to Twitch's API and ask for the top 100 clips for that game that day. It will then save this data in a JSON file named `clips.json`. It will simply loop through the clip URLs and download each clip till it reaches the limit specifed in the config. When the limit it reached (the video is long enough) it will take all the mp4 files and concatenate these into 1 video. When this video is done rendering, it will upload it to YouTube. When the video is uploaded it will create a new folder for the next game in the list (if any) with the game title as folder name and redo the process written above.  
 
 Example
--------
+=======
 `Here`_ is an example of how the videos turn out on YouTube (made with this repo)
 
 .. _Here: https://www.youtube.com/channel/UCd0wttXr03lIcTLv38U5d-w
 
 License
--------
+=======
 MIT License
 
 Copyright (c) 2020 `offish`_
