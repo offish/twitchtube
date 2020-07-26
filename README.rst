@@ -11,13 +11,17 @@ Automatically make a compilation of the most viewed daily clips on Twitch, and u
 
 Installation
 ============
+Download the repo as ZIP and unpack it somewhere accessible.
+
+To install all the needed packages you either need to run install.bat or this command (has to be in
+the right directory).
 
 .. code-block:: text
 
     pip install -r requirements.txt 
 
-Setup
-=====
+Configuration
+=============
 Creating your Twitch Application
 --------------------------------
 Go to https://dev.twitch.tv/console and register a new application.
@@ -52,21 +56,75 @@ Click "Credentials" and then "+ Create Credentials".
 You will now see 3 options, click "OAuth client ID". 
 Now you might need to configure consent screen.
 If you need to configure this, click "External" and then "Create".
-Write something in the application name field, might be wise to name it something you will remember like "twitchtube" or "YouTube Twitch Bot".
+Write something in the application name field, might be wise to name it something you will remember like "twitchtube" or 
+"YouTube Twitch Bot".
 Now you will see your application, go to "Credentials" again and click "+ Create Credentials" and then "OAuth client ID".
 Set application type to Desktop app and name it whatever.
 Click Ok, and click the download icon.
 Open the JSON file that gets downloaded, select everything and paste it into the client_secret file under dist.
 
+Adding/removing games
+---------------------
+If you want to add a game/category, you simply write the name of the game how it appears on Twitch inside the GAMES list in config.py.
+If you want to add Just Chatting for example GAMES should look like this:
+
+.. code-block:: python
+
+    GAMES = ['Rust', 'Just Chatting', 'Team Fortress 2']
+
+Last entry in the list must not have a comma.
+
+If only want to have 1 game/category GAMES, in this case Just Chatting it should look like this:
+
+.. code-block:: python
+
+    GAMES = ['Just Chatting']
+
+**EVERY ENTRY IN GAMES MUST ALSO BE FOUND IN TAGS AND DESCRIPTIONS**
+
+Example:
+
+.. code-block:: python
+
+    GAMES = ['Just Chatting']
+
+    TAGS = {
+        'Just Chatting': 'just chatting, just chatting twitch, just chatting twitch highlights'
+    }
+
+    DESCRIPTIONS = {
+        'Just Chatting': 'The most viewed Just Chatting clips today.\n\n{}\n#Twitch #TwitchHighlights #Just Chatting'
+    }
+
+Counter-Strike: Global Offensive is currently not supported since folders can't include colons in their folder name.
+
 How it works
 ============
-The script starts by checking every game listed in the config. It will then create a folder with the current date as the name and inside of this folder it will create another folder for the first game in the list (also specified in the config). It will send a request to Twitch's API and ask for the top 100 clips for that game that day. It will then save this data in a JSON file named `clips.json`. It will simply loop through the clip URLs and download each clip till it reaches the limit specifed in the config. When the limit it reached (the video is long enough) it will take all the mp4 files and concatenate these into 1 video. When this video is done rendering, it will upload it to YouTube. When the video is uploaded it will create a new folder for the next game in the list (if any) with the game title as folder name and redo the process written above.  
+The script starts by checking every game listed in the config. It will then create a folder with 
+the current date as the name and inside of this folder it will create another folder for the 
+first game in the list (also specified in the config). It will send a request to Twitch's API 
+and ask for the top 100 clips for that game that day. It will then save this data in a JSON 
+file named `clips.json`. It will simply loop through the clip URLs and download each clip 
+till it reaches the limit specifed in the config. When the limit it reached (the video is 
+long enough) it will take all the mp4 files and concatenate these into 1 video. When this 
+video is done rendering, it will upload it to YouTube. When the video is uploaded it will 
+create a new folder for the next game in the list (if any) with the game title as folder 
+name and redo the process written above.  
+
+Running
+=======
+To run the script simply run start.bat or type python main.py in command prompt (must be in the correct folder).
 
 Example
 =======
-`Here`_ is an example of how the videos turn out on YouTube (made with this repo)
+`Here`_ is an example of how the videos look like on YouTube. Majority of these videos are made using
+this repo. Only a couple of titles and thumbnails have been changed.
 
 .. _Here: https://www.youtube.com/channel/UCd0wttXr03lIcTLv38U5d-w
+
+Note
+====
+I've only tested this script using Python 3.7.3, but should work with later versions.
 
 License
 =======
