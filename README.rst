@@ -4,7 +4,7 @@ twitchtube
 
 |donate_steam| |donate|
 
-Automatically make compilations of the most viewed clips on Twitch and upload the video to YouTube using Python 3. 
+Automatically make video compilations of the most viewed Twitch clips and upload it to YouTube using Python 3. 
 
 .. contents:: Table of Contents
     :depth: 2
