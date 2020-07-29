@@ -4,13 +4,13 @@ twitchtube
 
 |donate_steam| |donate|
 
-Automatically make a compilation of the most viewed daily clips on Twitch, and upload the video to YouTube using Python 3. 
+Automatically make compilations of the most viewed clips on Twitch and upload the video to YouTube using Python 3. 
 
 .. contents:: Table of Contents
-    :depth: 1
+    :depth: 2
 
 Installation
-============
+------------
 Download the repo as ZIP and unpack it somewhere accessible.
 
 To install all the needed packages you either need to run install.bat or this command (has to be in
@@ -21,9 +21,9 @@ the right directory).
     pip install -r requirements.txt 
 
 Configuration
-=============
+-------------
 Creating your Twitch Application
---------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Go to https://dev.twitch.tv/console and register a new application.
 The name of the application does not matter. Set "OAuth Redirect URLs" to https://twitchapps.com/tokengen/
 Set category to Application Integration or Other. 
@@ -31,26 +31,26 @@ You will now see your Client ID, copy this ID.
 Go to config.py under dist, find CLIENT_ID and paste it inside apostrophes.
 
 Getting your OAuth Token
-------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^
 Now head over to https://twitchapps.com/tokengen/
 Paste in your Client ID, scopes does not matter in our case. 
 Click "Connect" and then authorize with Twitch.
 Copy your OAuth Token, go to config.py, find OAUTH_TOKEN and paste it inside the apostrophes.
 
 Creating your Google Project
-----------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Go to https://console.cloud.google.com/ and create a new project.
 Name does not matter.
 
 Enabling YouTube Data API v3
-----------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Click on the menu on the left side of your screen and navigate to "APIs & Services".
 Hover over this button and click "Library".
 Search for "YouTube Data API v3" and click the first result.
 Enable this API. 
 
 Getting your client_secret
---------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 When you've clicked enable you should now be on the "Overview" tab.
 Click "Credentials" and then "+ Create Credentials".
 You will now see 3 options, click "OAuth client ID". 
@@ -64,7 +64,7 @@ Click Ok, and click the download icon.
 Open the JSON file that gets downloaded, select everything and paste it into the client_secret file under dist.
 
 Adding/removing games
----------------------
+^^^^^^^^^^^^^^^^^^^^^
 If you want to add a game/category, you simply write the name of the game how it appears on Twitch inside the GAMES list in config.py.
 If you want to add Just Chatting for example GAMES should look like this:
 
@@ -99,7 +99,7 @@ Example:
 Counter-Strike: Global Offensive is currently not supported since folders can't include colons in their folder name.
 
 How it works
-============
+------------
 The script starts by checking every game listed in the config. It will then create a folder with 
 the current date as the name and inside of this folder it will create another folder for the 
 first game in the list (also specified in the config). It will send a request to Twitch's API 
@@ -112,22 +112,22 @@ create a new folder for the next game in the list (if any) with the game title a
 name and redo the process written above.  
 
 Running
-=======
+-------
 To run the script simply run start.bat or type python main.py in command prompt (must be in the correct folder).
 
 Example
-=======
+-------
 `Here`_ is an example of how the videos look like on YouTube. Majority of these videos are made using
 this repo. Only a couple of titles and thumbnails have been changed.
 
 .. _Here: https://www.youtube.com/channel/UCd0wttXr03lIcTLv38U5d-w
 
 Note
-====
+----
 I've only tested this script using Python 3.7.3, but should work with later versions.
 
 License
-=======
+-------
 MIT License
 
 Copyright (c) 2020 `offish`_
