@@ -39,7 +39,9 @@ def render(path: str):
         del name
 
     final = concatenate_videoclips(videos, method='compose')
-    final.write_videofile(f'{path}/rendered.mp4', fps=FRAMES)
+    final.write_videofile(f'{path}/rendered.mp4', fps=FRAMES, \
+        temp_audiofile=f'{path}/temp-audio.m4a', remove_temp=True, \
+        codec="libx264", audio_codec="aac")
 
     print() # New line for cleaner logging
     log.info('Video is done rendering!\n')
