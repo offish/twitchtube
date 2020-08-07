@@ -1,4 +1,4 @@
 @echo off
-title 
+title twitchtube
 pip install -r requirements.txt
 pause
