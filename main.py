@@ -35,6 +35,7 @@ while True:
 
                     del names
                     del config
+                    break
 
                 else:
                     log.error(f'There was an error or timeout on Twitch\'s end, retrying... {i + 1}/{tries}')
