@@ -8,21 +8,18 @@ def get_date():
     return date.today().strftime('%b-%d-%Y')
 
 
-def create_video_config(game, streamers):
-    config = {
+def create_video_config(game, streamers) -> dict:
+    return {
         'category': 20,
         'keywords': get_tags(game),
         'description': get_description(game, streamers),
         'title': get_title(game),
         'file': get_file(game)
     }
-    return config
 
 
 def get_tags(game):
-    if game in TAGS:
-        return TAGS[game]
-    return 'twitchtube, made by offish'
+    return TAGS.get(game)
 
 
 def get_description(game, streamers):
