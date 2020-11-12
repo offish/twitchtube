@@ -1,12 +1,14 @@
-from dist.config import GAMES, VIDEO_LENGTH, CLIP_PATH
+from os.path import isdir
+from pathlib import Path
+from time import sleep
+
+from dist.config import GAMES, VIDEO_LENGTH, CLIP_PATH, TIMEOUT, UPLOAD_TO_YOUTUBE
 from dist.other import create_video_config, get_date
 from dist.clips import get_clips, download_clips
 from dist.upload import upload_video_to_youtube
 from dist.video import render
 from dist.logging import log
-from os.path import isdir
-from pathlib import Path
-from time import sleep
+
 
 log = log()
 
@@ -28,13 +30,15 @@ while True:
                 if clips:
                     log.info(f'Starting to make a video for {game}')
                     names = download_clips(clips, VIDEO_LENGTH, path)
-                    config = create_video_config(game, names)
-                    
                     render(path)
-                    upload_video_to_youtube(config)
+
+                    if UPLOAD_TO_YOUTUBE:
+                        config = create_video_config(game, names)
+                        upload_video_to_youtube(config)
+                        
+                        del config
 
                     del names
-                    del config
                     break
 
                 else:
@@ -43,4 +47,4 @@ while True:
         else:
             log.info(f'Already made a video for {game}. Rechecking in an hour.')
 
-    sleep(3600)
+    sleep(TIMEOUT)
