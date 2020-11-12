@@ -2,7 +2,7 @@ import json
 import re
 import urllib.request
 from math import floor
-from twitch import TwitchHelix
+
 import requests
 
 from .config import CLIENT_ID, OAUTH_TOKEN, PARAMS, HEADERS
@@ -10,7 +10,6 @@ from .logging import log
 
 log = log()
 
-client = TwitchHelix(CLIENT_ID, OAUTH_TOKEN)
 
 def get_clip_data(slug: str):
     clip_info = get_data(slug)
@@ -26,7 +25,6 @@ def get_clip_data(slug: str):
 
     raise TypeError(f'Twitch didn\'t send what we wanted as response (could not find \'data\' in response). Response from /helix/ API endpoint:\n{clip_info}')
 
-    
 
 def get_progress(count, block_size, total_size):
     percent = int(count * block_size * 100 / total_size)
@@ -35,7 +33,6 @@ def get_progress(count, block_size, total_size):
 
 def get_slug(clip: str):
     slug = clip.split('/')
-
     return slug[len(slug) - 1]
 
 
@@ -54,9 +51,15 @@ def download_clip(clip: str, basepath: str):
 
 
 def get_data(slug: str) -> dict:
-    res = client.get_clips(clip_ids=slug)[0]
+    _params = {'id': slug}
+    _headers = {
+        'Authorization': 'Bearer ' + OAUTH_TOKEN,
+        'Client-Id': CLIENT_ID
+    }
+    response = requests.get('https://api.twitch.tv/helix/clips',
+        headers=_headers, params=_params)
 
-    return res
+    return response.json()['data'][0]
 
 
 def get_clips(game: str, length: float, path: str):
