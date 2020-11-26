@@ -45,6 +45,6 @@ while True:
                     log.error(f'There was an error or timeout on Twitch\'s end, retrying... {i + 1}/{tries}')
 
         else:
-            log.info(f'Already made a video for {game}. Rechecking in an hour.')
+            log.info(f'Already made a video for {game}. Rechecking after {TIMEOUT} seconds.')
 
     sleep(TIMEOUT)
