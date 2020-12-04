@@ -1,16 +1,19 @@
-from os.path import isdir
+from os.path import exists
 from pathlib import Path
 from time import sleep
+from glob import glob
+from os import remove
 
-from dist.config import GAMES, VIDEO_LENGTH, CLIP_PATH, TIMEOUT, UPLOAD_TO_YOUTUBE
-from dist.other import create_video_config, get_date
-from dist.clips import get_clips, download_clips
-from dist.upload import upload_video_to_youtube
-from dist.video import render
-from dist.logging import log
+from twitchtube.logging import Log
+from twitchtube.config import *
+from twitchtube.upload import upload_video_to_youtube
+from twitchtube.utils import create_video_config, get_date
+from twitchtube.clips import get_clips, download_clips
+from twitchtube.video import render
 
 
-log = log()
+log = Log()
+
 
 while True:
 
@@ -18,10 +21,9 @@ while True:
         
         path = CLIP_PATH.format(get_date(), game)
 
-        if not isdir(path):
-            tries = 3
+        if not exists(path + f'/{FILE_NAME}.mp4'):
 
-            for i in range(tries):
+            for i in range(RETRIES):
 
                 Path(path).mkdir(parents=True, exist_ok=True)
 
@@ -35,14 +37,21 @@ while True:
                     if UPLOAD_TO_YOUTUBE:
                         config = create_video_config(game, names)
                         upload_video_to_youtube(config)
-                        
-                        del config
+                    
+                    if DELETE_CLIPS:
+                        files = glob(f'{path}/*.mp4')
 
-                    del names
+                        for file in files:
+                            if not file == path + '\\' + FILE_NAME + '.mp4':
+                                try:
+                                    remove(file)
+                                except PermissionError:
+                                    log.error(f'Could not remove {file} because its being used')
+                    
                     break
 
                 else:
-                    log.error(f'There was an error or timeout on Twitch\'s end, retrying... {i + 1}/{tries}')
+                    log.error(f'There was an error or timeout on Twitch\'s end, retrying... {i + 1}/{RETRIES}')
 
         else:
             log.info(f'Already made a video for {game}. Rechecking after {TIMEOUT} seconds.')
