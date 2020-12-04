@@ -1,16 +1,16 @@
 from datetime import date
 import json
 
-from .config import TAGS, DESCRIPTIONS, CLIP_PATH, TITLE
+from .config import *
 
 
-def get_date():
+def get_date() -> str:
     return date.today().strftime('%b-%d-%Y')
 
 
 def create_video_config(game, streamers) -> dict:
     return {
-        'category': 20,
+        'category': CATEGORY,
         'keywords': get_tags(game),
         'description': get_description(game, streamers),
         'title': get_title(game),
@@ -18,11 +18,11 @@ def create_video_config(game, streamers) -> dict:
     }
 
 
-def get_tags(game):
+def get_tags(game) -> str:
     return TAGS.get(game)
 
 
-def get_description(game, streamers):
+def get_description(game, streamers) -> str:
     names = 'Streamers in this video:\n'
     
     for name in streamers:
@@ -30,18 +30,18 @@ def get_description(game, streamers):
 
     if game in DESCRIPTIONS:
         return DESCRIPTIONS[game].format(names)
-    return f'Made with twitchtube by offish\n{names}'
+    return names
 
 
-def get_title(game):
+def get_title(game) -> str:
     if TITLE:
         return TITLE
 
     title = json.loads(open(f'{CLIP_PATH.format(get_date(), game)}/clips.json', 'r').read())
-
+    
     for i in title:
-        return '{} - {} Highlights #'.format(title[i]['title'], game)
+        return f"{title[i]['title']} - {game} Twitch Highlights"
 
 
-def get_file(game):
-    return f'{CLIP_PATH.format(get_date(), game)}/rendered.mp4'
+def get_file(game) -> str:
+    return f'{CLIP_PATH.format(get_date(), game)}/{FILE_NAME}.mp4'

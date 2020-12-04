@@ -1,17 +1,18 @@
+from math import ceil
+import urllib.request
 import json
 import re
-import urllib.request
-from math import floor
+
+from .config import CLIENT_ID, OAUTH_TOKEN, PARAMS, HEADERS
+from .logging import Log
 
 import requests
 
-from .config import CLIENT_ID, OAUTH_TOKEN, PARAMS, HEADERS
-from .logging import log
 
-log = log()
+log = Log()
 
 
-def get_clip_data(slug: str):
+def get_clip_data(slug: str) -> tuple:
     clip_info = get_data(slug)
 
     if 'thumbnail_url' in clip_info \
@@ -26,17 +27,17 @@ def get_clip_data(slug: str):
     raise TypeError(f'Twitch didn\'t send what we wanted as response (could not find \'data\' in response). Response from /helix/ API endpoint:\n{clip_info}')
 
 
-def get_progress(count, block_size, total_size):
+def get_progress(count, block_size, total_size) -> None:
     percent = int(count * block_size * 100 / total_size)
     print(f'Downloading clip... {percent}%', end='\r', flush=True)
 
 
-def get_slug(clip: str):
+def get_slug(clip: str) -> str:
     slug = clip.split('/')
     return slug[len(slug) - 1]
 
 
-def download_clip(clip: str, basepath: str):
+def download_clip(clip: str, basepath: str) -> None:
     slug = get_slug(clip)
     mp4_url, clip_title = get_clip_data(slug)
     regex = re.compile('[^a-zA-Z0-9_]')
@@ -51,25 +52,29 @@ def download_clip(clip: str, basepath: str):
 
 
 def get_data(slug: str) -> dict:
-    _params = {'id': slug}
-    _headers = {
-        'Authorization': 'Bearer ' + OAUTH_TOKEN,
-        'Client-Id': CLIENT_ID
-    }
-    response = requests.get('https://api.twitch.tv/helix/clips',
-        headers=_headers, params=_params)
+    return requests.get(
+        'https://api.twitch.tv/helix/clips',
+        headers = {
+            'Authorization': 'Bearer ' + OAUTH_TOKEN,
+            'Client-Id': CLIENT_ID
+        }, 
+        params = {
+            'id': slug
+        }
+    ).json()['data'][0]
 
-    return response.json()['data'][0]
 
-
-def get_clips(game: str, length: float, path: str):
+def get_clips(game: str, length: float, path: str) -> dict:
     length *= 60
     data = {}
 
     PARAMS['game'] = game
 
-    response = requests.get('https://api.twitch.tv/kraken/clips/top',
-        headers=HEADERS, params=PARAMS).json()
+    response = requests.get(
+        'https://api.twitch.tv/kraken/clips/top',
+        headers=HEADERS, 
+        params=PARAMS
+    ).json()
 
     if 'clips' in response:
 
@@ -89,27 +94,29 @@ def get_clips(game: str, length: float, path: str):
     else:
         log.error(f'Could not find \'clips\' in response. {response}')
 
-        return False
+        return {}
 
 
-def download_clips(data: dict, length: float, path: str):
+def download_clips(data: dict, length: float, path: str) -> list:
+    amount = 0
     length *= 60
     names = []
 
     for clip in data:
 
         download_clip(data[clip]['url'], path)
-        length -= data[clip]['duration']
+        length -= round(data[clip]['duration'])
 
         name = data[clip]['display_name']
+        amount += 1
 
         if name not in names:
             names.append(name)
         
-        log.info(f'Remaining video length: {floor(length)} seconds.\n')
+        log.info(f'Remaining video length: {ceil(length)} seconds.\n')
 
         if length <= 0:
-            log.info('Downloaded all clips.\n')
-            return names
-        else:
-            continue
+            break
+    
+    log.info(f'Downloaded {amount} clips.\n')
+    return names

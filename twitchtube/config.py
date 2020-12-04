@@ -18,12 +18,16 @@ GAMES = ['Just Chatting', 'Team Fortress 2']
 VIDEO_LENGTH = 10.5 # in minutes (doesn't always work for some reason)
 FRAMES = 30 # Frames per second 30 or 60
 RESOLUTION = (720, 1280) # (height, width) for 1080p: (1080, 1920)
+FILE_NAME = 'rendered' # Name of the rendered video
 
 # Other
-UPLOAD_TO_YOUTUBE = True # Whether or not the video should upload to YouTube after rendering (True/False)
+UPLOAD_TO_YOUTUBE = True # If the video should be uploaded to YouTube after rendering (True/False)
+DELETE_CLIPS = True # If the downloaded clips should be deleted after rendering the video (True/False)
 TIMEOUT = 3600 # How often it should check if it has made a video today (in seconds)
 
+
 # Twitch
+RETRIES = 5
 
 # Twitch API Request Options
 HEADERS = {'Accept': 'application/vnd.twitchtv.v5+json', 'Client-ID': CLIENT_ID}
@@ -33,10 +37,9 @@ PARAMS = {'period': 'day', 'language': 'en', 'limit': 100}  # 100 is max
 # YouTube
 
 # YouTube Video
-TITLE = ''
-# If not given a title it would take the title of the first clip, and add "- *game* Highlights #"
+TITLE = '' # If not given a title it would take the title of the first clip, and add "- *game* Highlights Twitch"
 
-CATEGORY = 20 # 20 for Gaming
+CATEGORY = 20  # 20 for Gaming
 
 
 # YouTube Tags

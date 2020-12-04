@@ -1,12 +1,12 @@
 import os
 
+from .config import RESOLUTION, FRAMES
+from .logging import Log
+
 from moviepy.editor import VideoFileClip, concatenate_videoclips
 
-from .config import RESOLUTION, FRAMES
-from .logging import log
 
-
-log = log()
+log = Log()
 
 
 def get_clip_files(path: str):
