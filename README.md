@@ -15,13 +15,13 @@ Automatically make video compilations of the most viewed Twitch clips and upload
 ## Installation
 Download the repo as ZIP and unpack it somewhere accessible.
 
-To install all the needed packages you either need to run install.bat or this command (has to be in
+To install all the packages needed you need to run this command (has to be in
 the right directory).
 
 ```
 pip install -r requirements.txt 
 ```
-   
+
 
 ## Configuration
 ### Creating your Twitch Application
@@ -107,7 +107,7 @@ create a new folder for the next game in the list (if any) with the game title a
 name and redo the process written above.  
 
 ## Running
-To run the script simply run start.bat or type python main.py in command prompt (must be in the correct folder).
+To run the script run `python main.py` in command prompt (must be in the correct folder).
 
 ## Example
 [Here](https://www.youtube.com/channel/UCd0wttXr03lIcTLv38U5d-w) is an example of how the videos look like on YouTube. Majority of these videos are made using
