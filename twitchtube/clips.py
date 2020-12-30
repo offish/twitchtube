@@ -5,6 +5,7 @@ import re
 
 from .config import CLIENT_ID, OAUTH_TOKEN, PARAMS, HEADERS
 from .logging import Log
+from .api import get
 
 import requests
 
@@ -17,16 +18,7 @@ def get_data(slug: str) -> dict:
     Gets the data from a given slug,
     returns a JSON respone from the Helix API endpoint
     """
-    response = requests.get(
-        'https://api.twitch.tv/helix/clips',
-        headers={
-            'Authorization': 'Bearer ' + OAUTH_TOKEN,
-            'Client-Id': CLIENT_ID
-        },
-        params={
-            'id': slug
-        }
-    ).json()
+    response = get('data', slug=slug)
 
     try:
         return response['data'][0]
@@ -55,7 +47,7 @@ def get_clip_data(slug: str) -> tuple:
 
         return mp4_url, title
 
-    raise TypeError(f'Twitch didn\'t send what we wanted as response (could not find \'data\' in response). Response from /helix/ API endpoint:\n{clip_info}')
+    raise TypeError(f'We didn\'t receieve what we wanted. /helix/clips endpoint gave:\n{clip_info}')
 
 
 def get_progress(count, block_size, total_size) -> None:
@@ -103,11 +95,7 @@ def get_clips(game: str, path: str) -> dict:
 
     PARAMS['game'] = game
 
-    response = requests.get(
-        'https://api.twitch.tv/kraken/clips/top',
-        headers = HEADERS, 
-        params = PARAMS
-    ).json()
+    response = get('top_clips', headers=HEADERS, params=PARAMS)
 
     if 'clips' in response:
 
