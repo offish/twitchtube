@@ -12,6 +12,7 @@ def log(color: int, sort: str, text: str) -> None:
     Used for colored printing, does not return anything.
     """
     time = datetime.now().time().strftime('%H:%M:%S')
+    text.encode(encoding='UTF-8', errors='ignore')
     print(f'{f.GREEN}twitchtube {f.WHITE}| {time} - {color + sort}{f.WHITE}: {text}{f.WHITE}')
 
 
