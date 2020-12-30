@@ -8,9 +8,13 @@
 [![Donate Steam](https://img.shields.io/badge/donate-steam-green.svg)](https://steamcommunity.com/tradeoffer/new/?partner=293059984&token=0-l_idZR)
 [![Donate PayPal](https://img.shields.io/badge/donate-paypal-blue.svg)](https://www.paypal.me/0ffish)
 
-
 Automatically make video compilations of the most viewed Twitch clips and upload them to YouTube using Python 3. 
 
+## Example
+![Screenshot](https://user-images.githubusercontent.com/30203217/103347433-4e5a7400-4a97-11eb-833a-0f5d59b0cd7e.png)
+
+[Here](https://www.youtube.com/channel/UCd0wttXr03lIcTLv38U5d-w) is an example of how the videos look like on YouTube. Majority of these videos are made using
+this repo. Only a couple of titles and thumbnails have been changed.
 
 ## Installation
 Download the repo as ZIP and unzip it somewhere accessible.
@@ -110,10 +114,6 @@ To run the script run this command (must be in the correct folder).
 ```
 python main.py
 ``` 
-
-## Example
-[Here](https://www.youtube.com/channel/UCd0wttXr03lIcTLv38U5d-w) is an example of how the videos look like on YouTube. Majority of these videos are made using
-this repo. Only a couple of titles and thumbnails have been changed.
 
 ## Note
 I've only tested this script using Python 3.7.3, but should work with later versions.
