@@ -203,7 +203,10 @@ def upload_video_to_youtube(config: dict):
     if os.path.isfile(CREDENTIALS_FILE):
         youtube = getAuthenticatedServiceFromStorage(CREDENTIALS_FILE)
     else:
-        os.makedirs(f'{PATH}/credentials')
+        try:
+            os.makedirs(f'{PATH}/credentials')
+        except FileExistsError:
+            pass
         youtube = getAuthenticatedService(CREDENTIALS_FILE)
 
     try:
