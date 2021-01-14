@@ -8,7 +8,7 @@ def get_date() -> str:
     """
     Gets the current date and returns the date as a string.
     """
-    return date.today().strftime('%b-%d-%Y')
+    return date.today().strftime("%b-%d-%Y")
 
 
 def create_video_config(game: str, streamers: list) -> dict:
@@ -17,11 +17,11 @@ def create_video_config(game: str, streamers: list) -> dict:
     returns a dict.
     """
     return {
-        'category': CATEGORY,
-        'keywords': get_tags(game),
-        'description': get_description(game, streamers),
-        'title': get_title(game),
-        'file': get_file(game)
+        "category": CATEGORY,
+        "keywords": get_tags(game),
+        "description": get_description(game, streamers),
+        "title": get_title(game),
+        "file": get_file(game),
     }
 
 
@@ -37,10 +37,10 @@ def get_description(game: str, streamers: list) -> str:
     Gets the description with given list of streamers
     and game, returns the description as a string.
     """
-    names = 'Streamers in this video:\n'
-    
+    names = "Streamers in this video:\n"
+
     for name in streamers:
-        names += f'https://twitch.tv/{name}\n'
+        names += f"https://twitch.tv/{name}\n"
 
     if game in DESCRIPTIONS:
         return DESCRIPTIONS[game].format(names)
@@ -54,8 +54,10 @@ def get_title(game: str) -> str:
     if TITLE:
         return TITLE
 
-    title = json.loads(open(f'{CLIP_PATH.format(get_date(), game)}/clips.json', 'r').read())
-    
+    title = json.loads(
+        open(f"{CLIP_PATH.format(get_date(), game)}/clips.json", "r").read()
+    )
+
     for i in title:
         # Return the first entry's title
         return f"{title[i]['title']} - {game} Twitch Highlights"
@@ -65,4 +67,4 @@ def get_file(game: str) -> str:
     """
     Gets the path/file given game and returns it as a string.
     """
-    return f'{CLIP_PATH.format(get_date(), game)}\\{FILE_NAME}.mp4'
+    return f"{CLIP_PATH.format(get_date(), game)}\\{FILE_NAME}.mp4"

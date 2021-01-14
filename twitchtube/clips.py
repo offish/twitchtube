@@ -18,13 +18,13 @@ def get_data(slug: str) -> dict:
     Gets the data from a given slug,
     returns a JSON respone from the Helix API endpoint
     """
-    response = get('data', slug=slug)
+    response = get("data", slug=slug)
 
     try:
-        return response['data'][0]
+        return response["data"][0]
     except KeyError as e:
-        log.error(f'Ran into exception: {e}')
-        log.error(f'Response: {response}')
+        log.error(f"Ran into exception: {e}")
+        log.error(f"Response: {response}")
         return response
 
 
@@ -36,18 +36,19 @@ def get_clip_data(slug: str) -> tuple:
     """
     clip_info = get_data(slug)
 
-    if 'thumbnail_url' in clip_info \
-        and 'title' in clip_info:
-        # All to get what we need to return 
+    if "thumbnail_url" in clip_info and "title" in clip_info:
+        # All to get what we need to return
         # the mp4_url and title of the clip
-        thumb_url = clip_info['thumbnail_url']
-        title = clip_info['title']
-        slice_point = thumb_url.index('-preview-')
-        mp4_url = thumb_url[:slice_point] + '.mp4'
+        thumb_url = clip_info["thumbnail_url"]
+        title = clip_info["title"]
+        slice_point = thumb_url.index("-preview-")
+        mp4_url = thumb_url[:slice_point] + ".mp4"
 
         return mp4_url, title
 
-    raise TypeError(f'We didn\'t receieve what we wanted. /helix/clips endpoint gave:\n{clip_info}')
+    raise TypeError(
+        f"We didn't receieve what we wanted. /helix/clips endpoint gave:\n{clip_info}"
+    )
 
 
 def get_progress(count, block_size, total_size) -> None:
@@ -55,7 +56,7 @@ def get_progress(count, block_size, total_size) -> None:
     Used for printing the download progress
     """
     percent = int(count * block_size * 100 / total_size)
-    print(f'Downloading clip... {percent}%', end='\r', flush=True)
+    print(f"Downloading clip... {percent}%", end="\r", flush=True)
 
 
 def get_slug(clip: str) -> str:
@@ -63,7 +64,7 @@ def get_slug(clip: str) -> str:
     Splits up the URL given and returns the slug
     of the clip.
     """
-    slug = clip.split('/')
+    slug = clip.split("/")
     return slug[len(slug) - 1]
 
 
@@ -73,17 +74,17 @@ def download_clip(clip: str, basepath: str) -> None:
     """
     slug = get_slug(clip)
     mp4_url, clip_title = get_clip_data(slug)
-    # Remove special characters so we can save the video 
-    regex = re.compile('[^a-zA-Z0-9_]')
-    clip_title = clip_title.replace(' ', '_')
-    out_filename = regex.sub('', clip_title) + '.mp4'
-    output_path = (basepath + '/' + out_filename)
+    # Remove special characters so we can save the video
+    regex = re.compile("[^a-zA-Z0-9_]")
+    clip_title = clip_title.replace(" ", "_")
+    out_filename = regex.sub("", clip_title) + ".mp4"
+    output_path = basepath + "/" + out_filename
 
-    log.info(f'Downloading clip with slug: {slug}.')
+    log.info(f"Downloading clip with slug: {slug}.")
     log.info(f'Saving "{clip_title}" as "{out_filename}".')
     # Download the clip with given mp4_url
     urllib.request.urlretrieve(mp4_url, output_path, reporthook=get_progress)
-    log.info(f'{slug} has been downloaded.')
+    log.info(f"{slug} has been downloaded.")
 
 
 def get_clips(game: str, path: str) -> dict:
@@ -93,28 +94,28 @@ def get_clips(game: str, path: str) -> dict:
     """
     data = {}
 
-    PARAMS['game'] = game
+    PARAMS["game"] = game
 
-    response = get('top_clips', headers=HEADERS, params=PARAMS)
+    response = get("top_clips", headers=HEADERS, params=PARAMS)
 
-    if 'clips' in response:
+    if "clips" in response:
 
-        for clip in response['clips']:
-            data[clip['tracking_id']] = {
-                'url': 'https://clips.twitch.tv/' + clip['slug'],
-                'title': clip['title'],
-                'display_name': clip['broadcaster']['display_name'],
-                'duration': clip['duration']
+        for clip in response["clips"]:
+            data[clip["tracking_id"]] = {
+                "url": "https://clips.twitch.tv/" + clip["slug"],
+                "title": clip["title"],
+                "display_name": clip["broadcaster"]["display_name"],
+                "duration": clip["duration"],
             }
 
         # Save the data to a JSON file
-        with open(f'{path}/clips.json', 'w') as f:
+        with open(f"{path}/clips.json", "w") as f:
             dump(data, f, indent=4)
 
         return data
 
     else:
-        log.error(f'Could not find \'clips\' in response. {response}')
+        log.error(f"Could not find 'clips' in response. {response}")
 
         return {}
 
@@ -129,23 +130,23 @@ def download_clips(data: dict, length: float, path: str) -> list:
 
     for clip in data:
 
-        download_clip(data[clip]['url'], path)
-        length -= data[clip]['duration']
+        download_clip(data[clip]["url"], path)
+        length -= data[clip]["duration"]
 
-        name = data[clip]['display_name']
+        name = data[clip]["display_name"]
         amount += 1
 
         if name not in names:
             names.append(name)
-        
-        log.info(f'Remaining video length: {ceil(length)} seconds.\n')
+
+        log.info(f"Remaining video length: {ceil(length)} seconds.\n")
 
         # If the rendered video would be long enough
         # we break out of the loop, else continue
         if length <= 0:
             break
-    
+
     # If the rendered video would be long enough or we
     # have ran out of clips, we return the streamer names
-    log.info(f'Downloaded {amount} clips.\n')
+    log.info(f"Downloaded {amount} clips.\n")
     return names

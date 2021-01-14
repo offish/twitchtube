@@ -17,7 +17,7 @@ def get_clip_files(path: str) -> list:
     clips = []
 
     for file in os.listdir(path):
-        if file.endswith('.mp4'):
+        if file.endswith(".mp4"):
             clips.append(os.path.join(path, file))
     return clips
 
@@ -28,7 +28,7 @@ def render(path: str) -> None:
     Finds every mp4 file in given path, downloads
     them and add them into a list to be rendered.
     """
-    log.info(f'Going to render video in {path}\n')
+    log.info(f"Going to render video in {path}\n")
 
     videos = []
 
@@ -36,22 +36,25 @@ def render(path: str) -> None:
 
         movie = VideoFileClip(video, target_resolution=RESOLUTION)
         # Just so we get cleaner logging
-        name = video.replace(path, '') \
-            .replace('_', ' ') \
-            .replace('\\', '')
-        
+        name = video.replace(path, "").replace("_", " ").replace("\\", "")
+
         videos.append(movie)
 
-        log.info(f'Added {name} to be rendered')
+        log.info(f"Added {name} to be rendered")
 
         del video
         del movie
         del name
 
-    final = concatenate_videoclips(videos, method='compose')
-    final.write_videofile(f'{path}\\{FILE_NAME}.mp4', fps=FRAMES, \
-        temp_audiofile=f'{path}\\temp-audio.m4a', remove_temp=True, \
-        codec="libx264", audio_codec="aac")
+    final = concatenate_videoclips(videos, method="compose")
+    final.write_videofile(
+        f"{path}\\{FILE_NAME}.mp4",
+        fps=FRAMES,
+        temp_audiofile=f"{path}\\temp-audio.m4a",
+        remove_temp=True,
+        codec="libx264",
+        audio_codec="aac",
+    )
 
-    print() # New line for cleaner logging
-    log.info('Video is done rendering!\n')
+    print()  # New line for cleaner logging
+    log.info("Video is done rendering!\n")
