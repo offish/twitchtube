@@ -1,25 +1,25 @@
 import os
 
-from .config import RESOLUTION, FRAMES, FILE_NAME
-from .logging import Log
+from twitchtube.config import *
+from twitchtube.logging import Log
 
 from moviepy.editor import VideoFileClip, concatenate_videoclips
-
 
 log = Log()
 
 
-def get_clip_files(path: str) -> list:
+def get_clip_paths(path: str) -> list:
     """
     Gets all the mp4 files listed in the given
-    path and returns the files/paths as a list.
+    path and returns the paths as a list.
     """
-    clips = []
+    return [
+        os.path.join(path, file) for file in os.listdir(path) if file.endswith(".mp4")
+    ]
 
-    for file in os.listdir(path):
-        if file.endswith(".mp4"):
-            clips.append(os.path.join(path, file))
-    return clips
+
+def add_clip(path: str, resize: bool = True) -> VideoFileClip:
+    return VideoFileClip(path, target_resolution=RESOLUTION if resize else None)
 
 
 def render(path: str) -> None:
@@ -30,23 +30,37 @@ def render(path: str) -> None:
     """
     log.info(f"Going to render video in {path}\n")
 
-    videos = []
+    video = []
 
-    for video in get_clip_files(path):
+    if ENABLE_INTRO:
+        video.append(add_clip(INTRO_FILE_PATH, RESIZE_INTRO == True))
 
-        movie = VideoFileClip(video, target_resolution=RESOLUTION)
+    number = 0
+
+    clips = get_clip_paths(path)
+
+    for clip in clips:
+
+        # Don't add transition if it's the first or last clip
+        if ENABLE_TRANSITION and not (number == 0 or number == len(clips)):
+            video.append(add_clip(TRANSITION_FILE_PATH, RESIZE_TRANSITION == True))
+
+        video.append(add_clip(clip, RESIZE_CLIPS == True))
+
         # Just so we get cleaner logging
-        name = video.replace(path, "").replace("_", " ").replace("\\", "")
-
-        videos.append(movie)
+        name = clip.replace(path, "").replace("_", " ").replace("\\", "")
 
         log.info(f"Added {name} to be rendered")
 
-        del video
-        del movie
+        number += 1
+
+        del clip
         del name
 
-    final = concatenate_videoclips(videos, method="compose")
+    if ENABLE_OUTRO:
+        video.append(add_clip(OUTRO_FILE_PATH, RESIZE_OUTRO == True))
+
+    final = concatenate_videoclips(video, method="compose")
     final.write_videofile(
         f"{path}\\{FILE_NAME}.mp4",
         fps=FRAMES,
@@ -58,3 +72,7 @@ def render(path: str) -> None:
 
     print()  # New line for cleaner logging
     log.info("Video is done rendering!\n")
+
+    del final
+    del clips
+    del video
