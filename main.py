@@ -50,7 +50,7 @@ while True:
                         with open(path + f"\\{SAVE_FILE_NAME}.json", "w") as f:
                             dump(config, f, indent=4)
 
-                    if UPLOAD_TO_YOUTUBE:
+                    if UPLOAD_TO_YOUTUBE and RENDER_VIDEO:
                         try:
                             upload_video_to_youtube(config)
                         except JSONDecodeError:
