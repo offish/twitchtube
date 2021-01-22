@@ -5,8 +5,11 @@ import pathlib
 # If you have a powerful enough computer you may set it to 1080p60
 
 # Secrets
-CLIENT_ID = ""  # Twitch Client ID
-OAUTH_TOKEN = ""  # Twitch OAuth Token
+# Twitch Client ID
+CLIENT_ID = ""
+
+# Twitch OAuth Token
+OAUTH_TOKEN = ""
 
 
 # Paths
@@ -15,24 +18,64 @@ CLIP_PATH = PATH + "\\clips\\{}\\{}"
 
 
 # Video
-GAMES = ["Just Chatting", "Team Fortress 2"]
-VIDEO_LENGTH = 10.5  # in minutes (doesn't always work for some reason)
-RENDER_VIDEO = (
-    True  # If downloaded clips should be rendered into one video (True/False)
-)
-FRAMES = 30  # Frames per second (30/60)
-RESOLUTION = (720, 1280)  # (height, width) for 1080p: (1080, 1920)
-FILE_NAME = "rendered"  # Name of the rendered video
+# Set the mode (game/channel)
+MODE = "channel"
+
+# If mode is channel put channel names e.g. ["trainwreckstv", "xqcow"]
+# If mode is game put game names e.g. ["Team Fortress 2", "Just Chatting"]
+LIST = ["trainwreckstv", "xqcow"]
+
+# If clips should be rendered into one video (True/False)
+# If set to False everything else under Video will be ignored
+RENDER_VIDEO = True
+
+# Resoultion of the rendered video (height, width) for 1080p: ((1080, 1920))
+RESOLUTION = (720, 1280)
+
+# Frames per second (30/60)
+FRAMES = 30
+
+# Minumum video length in minutes (doesn't always work)
+VIDEO_LENGTH = 10.5
+
+# Resize clips to fit RESOLUTION (True/False)
+# If any RESIZE option is set to False the video might end up having a weird resolution
+RESIZE_CLIPS = True
+
+# Name of the rendered video
+FILE_NAME = "rendered"
+
+# Enable (True/False)
+# Resize (True/False) read RESIZE_CLIPS
+# Path to video file (str)
+ENABLE_INTRO = False
+RESIZE_INTRO = True
+INTRO_FILE_PATH = PATH + "/assets/intro.mp4"
+
+ENABLE_TRANSITION = True
+RESIZE_TRANSITION = True
+TRANSITION_FILE_PATH = PATH + "/assets/transition.mp4"
+
+ENABLE_OUTRO = False
+RESIZE_OUTRO = True
+OUTRO_FILE_PATH = PATH + "/assets/outro.mp4"
 
 
 # Other
-SAVE_TO_FILE = True  # If YouTube stuff should be saved to a separate file e.g. title, description & tags (True/False)
-SAVE_FILE_NAME = "youtube"  # Name of the file YouTube stuff should be saved to
-UPLOAD_TO_YOUTUBE = (
-    True  # If the video should be uploaded to YouTube after rendering (True/False)
-)
-DELETE_CLIPS = True  # If the downloaded clips should be deleted after rendering the video (True/False)
-TIMEOUT = 3600  # How often it should check if it has made a video today (in seconds)
+# If YouTube stuff should be saved to a separate file e.g. title, description & tags (True/False)
+SAVE_TO_FILE = True
+
+# Name of the file YouTube stuff should be saved to
+SAVE_FILE_NAME = "youtube"
+
+# If the rendered video should be uploaded to YouTube after rendering (True/False)
+UPLOAD_TO_YOUTUBE = True
+
+# If the downloaded clips should be deleted after rendering the video (True/False)
+DELETE_CLIPS = True
+
+# How often it should check if it has made a video today (in seconds)
+TIMEOUT = 3600
 
 
 # Twitch
@@ -44,21 +87,21 @@ PARAMS = {"period": "day", "language": "en", "limit": 100}  # 100 is max
 
 
 # YouTube
+# If empty, it would take the title of the first clip, and add "- *category* Highlights Twitch"
+TITLE = ""
 
-# YouTube Video
-TITLE = ""  # If not given a title it would take the title of the first clip, and add "- *game* Highlights Twitch"
-CATEGORY = 20  # 20 for Gaming
+# 20 for Gaming
+CATEGORY = 20
 
-
-# YouTube Tags
+# Tags
 TAGS = {
     "Just Chatting": "just chatting, just chatting clips, just chatting twitch clips",
     "Team Fortress 2": "tf2, tf2 twitch, tf2 twitch clips",
 }
 
-# YouTube Descriptions
+# Descriptions
+# {} will be replaced with a list of streamer names
 DESCRIPTIONS = {
     "Just Chatting": "Just Chatting twitch clips \n\n{}\n",
     "Team Fortress 2": "TF2 twitch clips\n\n{}\n",
 }
-# {} will be replaced with a list of streamer names
