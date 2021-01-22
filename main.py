@@ -18,9 +18,9 @@ log = Log()
 
 while True:
 
-    for game in GAMES:
+    for category in LIST:
 
-        path = CLIP_PATH.format(get_date(), game)
+        path = CLIP_PATH.format(get_date(), category)
 
         # Here we check if we've made a video for today
         # by checking if the rendered file exists.
@@ -34,27 +34,27 @@ while True:
                 Path(path).mkdir(parents=True, exist_ok=True)
 
                 # Get the top Twitch clips
-                clips = get_clips(game, path)
+                clips = get_clips(category, path)
 
                 # Check if the API gave us a successful response
                 if clips:
-                    log.info(f"Starting to make a video for {game}")
+                    log.info(f"Starting to make a {category} video")
                     # Download all needed clips
                     names = download_clips(clips, VIDEO_LENGTH, path)
-                    config = create_video_config(game, names)
+                    config = create_video_config(category, names)
 
                     if RENDER_VIDEO:
                         render(path)
 
-                    if UPLOAD_TO_YOUTUBE:
+                    if SAVE_TO_FILE:
+                        with open(path + f"\\{SAVE_FILE_NAME}.json", "w") as f:
+                            dump(config, f, indent=4)
+
+                    if UPLOAD_TO_YOUTUBE and RENDER_VIDEO:
                         try:
                             upload_video_to_youtube(config)
                         except JSONDecodeError:
                             log.error("Your client_secret is empty or has wrong syntax")
-
-                    if SAVE_TO_FILE:
-                        with open(path + f"\\{SAVE_FILE_NAME}.json", "w") as f:
-                            dump(config, f, indent=4)
 
                     if DELETE_CLIPS:
                         # Get all the mp4 files in the path and delte them
@@ -74,14 +74,14 @@ while True:
 
                 else:
                     # Response was most likely an Internal Server Error and we retry
-                    log.error(
+                    log.info(
                         f"There was an error or timeout on Twitch's end, retrying... {i + 1}/{RETRIES}"
                     )
 
         else:
             # Rendered video does already exist
             log.info(
-                f"Already made a video for {game}. Rechecking after {TIMEOUT} seconds."
+                f"Already made a video for {category}. Rechecking after {TIMEOUT} seconds."
             )
 
     # Sleep for given timeout to check if it's a different date

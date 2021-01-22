@@ -11,6 +11,18 @@
 
 Automatically make video compilations of the most viewed Twitch clips and upload them to YouTube using Python 3. 
 
+## Features
+* Downloads the most popular clips from given `channel` or `game`
+* Downloads only the needed clips to reach `VIDEO_LENGTH`
+* Option for concatninating clips into one video 
+* Option for custom intro, transition and outro
+* Option for custom resolution
+* Option for custom frame rate
+* Option for minimum video length
+* Option for automatically uploading to YouTube
+* Option for creating a json file with title, description and tags for given category if upload fails or is turned off
+* Option for automatically deleting clips after render is done
+
 ## Example
 ![Screenshot](https://user-images.githubusercontent.com/30203217/103347433-4e5a7400-4a97-11eb-833a-0f5d59b0cd7e.png)
 
@@ -64,26 +76,26 @@ Set application type to Desktop app and name it whatever.
 Click "Ok", and then click the download icon.
 Open the JSON file that gets downloaded, select everything in this fiel and paste it into the [`client_secret.json`](twitchtube/client_secret.json) file.
 
-### Adding/removing games
-If you want to add a game/category, you simply write the name of the game how it appears on Twitch inside the `GAMES` list in [`config.py`](twitchtube/config.py).
-If you want to add Rust for example, `GAMES` should look like this:
+### Adding/removing to LIST
+If you want to add a game or channel, you simply write the name of the game how it appears on Twitch inside the `LIST` list in [`config.py`](twitchtube/config.py).
+If you want to add Rust for example, `LIST` should look like this:
 
 ```python
-GAMES = ['Rust', 'Just Chatting', 'Team Fortress 2']
+LIST = ['Rust', 'Just Chatting', 'Team Fortress 2']
 ```
 
 Last entry in the list should not have a comma.
 
-If you only want to have 1 game/category, `GAMES` should look like this:
+If you only want to have 1 game or channel, `LIST` should look like this:
 
 ```python
-GAMES = ['Just Chatting']
+LIST = ['Just Chatting']
 ```
 
 Example:
 
 ```python
-GAMES = ['Just Chatting']
+LIST = ['Just Chatting']
 
 TAGS = {
     'Just Chatting': 'just chatting, just chatting twitch, just chatting twitch highlights'
@@ -97,16 +109,16 @@ DESCRIPTIONS = {
 Counter-Strike: Global Offensive is currently not supported since folders can't include colons in their folder name.
 
 ## Explanation
-The script starts off by checking every game listed in the config. It will then create a folder with 
+The script starts off by checking every game or channel listed in the config. It will then create a folder with 
 the current date as folder name and inside this folder, it will create another folder for the 
-with the current game as folder name. It will send a request to Twitch's Kraken API 
+with the current game or channel as folder name. It will send a request to Twitch's Kraken API 
 and ask for the top 100 clips. It will then save this data in a JSON 
 file called `clips.json`. It will loop through the clip URLs and download each clip 
 till it reaches the limit specifed in the config. When the limit is reached, which means the video is 
-long enough it will take all the mp4 files in the game folder and doncatenete these clips into one 
+long enough it will take all the mp4 files in the game or channel folder and concatenete these clips into one 
 video (if specified). If time limit given is too big, it will just continue anyways. When the video is 
 done rendering, it will upload it to YouTube (if specified). When the video is uploaded it will delete 
-the clips (if specified) and create a new folder for the next game in the `GAMES` list (if any) and 
+the clips (if specified) and create a new folder for the next game or channel in  `LIST` (if any) and 
 redo the process written above.
 
 ## Running
