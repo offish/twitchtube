@@ -3,7 +3,7 @@ from json import dump
 import urllib.request
 import re
 
-from .config import CLIENT_ID, OAUTH_TOKEN, PARAMS, HEADERS
+from .config import CLIENT_ID, OAUTH_TOKEN, MODE, PARAMS, HEADERS
 from .logging import Log
 from .api import get
 
@@ -87,14 +87,14 @@ def download_clip(clip: str, basepath: str) -> None:
     log.info(f"{slug} has been downloaded.")
 
 
-def get_clips(game: str, path: str) -> dict:
+def get_clips(category: str, path: str) -> dict:
     """
     Gets the top clips for given game, returns JSON response
     from the Kraken API endpoint.
     """
     data = {}
 
-    PARAMS["game"] = game
+    PARAMS[MODE] = category
 
     response = get("top_clips", headers=HEADERS, params=PARAMS)
 
