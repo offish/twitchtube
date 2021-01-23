@@ -1,9 +1,10 @@
 import os
 
-from twitchtube.config import *
 from twitchtube.logging import Log
+from twitchtube.config import *
 
 from moviepy.editor import VideoFileClip, concatenate_videoclips
+
 
 log = Log()
 
@@ -62,13 +63,18 @@ def render(path: str) -> None:
 
     final = concatenate_videoclips(video, method="compose")
     final.write_videofile(
-        f"{path}\\{FILE_NAME}.mp4",
+        f"{path}/{FILE_NAME}.mp4",
         fps=FRAMES,
-        temp_audiofile=f"{path}\\temp-audio.m4a",
+        temp_audiofile=f"{path}/temp-audio.m4a",
         remove_temp=True,
         codec="libx264",
         audio_codec="aac",
     )
+
+    for clip in video:
+        clip.close()
+
+    final.close()
 
     print()  # New line for cleaner logging
     log.info("Video is done rendering!\n")

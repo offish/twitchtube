@@ -3,8 +3,8 @@ from json import dump
 import urllib.request
 import re
 
-from .config import CLIENT_ID, OAUTH_TOKEN, MODE, PARAMS, HEADERS
 from .logging import Log
+from .config import *
 from .api import get
 
 import requests
@@ -40,11 +40,10 @@ def get_clip_data(slug: str) -> tuple:
         # All to get what we need to return
         # the mp4_url and title of the clip
         thumb_url = clip_info["thumbnail_url"]
-        title = clip_info["title"]
         slice_point = thumb_url.index("-preview-")
         mp4_url = thumb_url[:slice_point] + ".mp4"
 
-        return mp4_url, title
+        return mp4_url, clip_info["title"]
 
     raise TypeError(
         f"We didn't receieve what we wanted. /helix/clips endpoint gave:\n{clip_info}"
@@ -76,12 +75,12 @@ def download_clip(clip: str, basepath: str) -> None:
     mp4_url, clip_title = get_clip_data(slug)
     # Remove special characters so we can save the video
     regex = re.compile("[^a-zA-Z0-9_]")
-    clip_title = clip_title.replace(" ", "_")
+    clip_title = clip_title.replace(" ", "_") if CLIP_TITLE == "title" else slug
     out_filename = regex.sub("", clip_title) + ".mp4"
     output_path = basepath + "/" + out_filename
 
     log.info(f"Downloading clip with slug: {slug}.")
-    log.info(f'Saving "{clip_title}" as "{out_filename}".')
+    log.info(f"Saving '{clip_title}' as '{out_filename}'.")
     # Download the clip with given mp4_url
     urllib.request.urlretrieve(mp4_url, output_path, reporthook=get_progress)
     log.info(f"{slug} has been downloaded.")

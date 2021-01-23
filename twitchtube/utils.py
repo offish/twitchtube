@@ -67,4 +67,4 @@ def get_file(category: str) -> str:
     """
     Gets the path/file given category and returns it as a string.
     """
-    return f"{CLIP_PATH.format(get_date(), category)}\\{FILE_NAME}.mp4"
+    return f"{CLIP_PATH.format(get_date(), category)}/{FILE_NAME}.mp4"
