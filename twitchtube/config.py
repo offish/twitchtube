@@ -45,7 +45,7 @@ RESIZE_CLIPS = True
 # Name of the rendered video
 FILE_NAME = "rendered"
 
-# Name of downloaded clip (slug/name)
+# Name of downloaded clip (slug/title)
 CLIP_TITLE = "slug"
 
 # Enable (True/False)
