@@ -11,7 +11,7 @@ CLIENT_ID = ""
 # Twitch OAuth Token
 OAUTH_TOKEN = ""
 
-# Path to the Firefox profile were you are logged into YouTube
+# Path to the Firefox profile where you are logged into YouTube
 ROOT_PROFILE_PATH = ""
 
 # How many seconds Firefox should sleep for when uploading
