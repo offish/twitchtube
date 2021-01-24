@@ -11,6 +11,11 @@ CLIENT_ID = ""
 # Twitch OAuth Token
 OAUTH_TOKEN = ""
 
+# Path to the Firefox profile were you are logged into YouTube
+ROOT_PROFILE_PATH = ""
+
+# How many seconds Firefox should sleep for when uploading
+SLEEP = 3
 
 # Paths
 PATH = str(pathlib.Path().absolute()).replace("\\", "/")
@@ -93,10 +98,12 @@ PARAMS = {"period": "day", "language": "en", "limit": 100}  # 100 is max
 # If empty, it would take the title of the first clip, and add "- *category* Highlights Twitch"
 TITLE = ""
 
-# 20 for Gaming
-CATEGORY = 20
+# Category
+# Not supported yet
+CATEGORY = 20  # 20 for gaming
 
 # Tags
+# Not supported yet
 TAGS = {
     "Just Chatting": "just chatting, just chatting clips, just chatting twitch clips",
     "Team Fortress 2": "tf2, tf2 twitch, tf2 twitch clips",
