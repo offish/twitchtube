@@ -7,7 +7,7 @@ from os import remove
 
 from twitchtube.logging import Log
 from twitchtube.config import *
-from twitchtube.upload import upload_video_to_youtube
+from twitchtube.upload import Upload
 from twitchtube.utils import create_video_config, get_date
 from twitchtube.clips import get_clips, download_clips
 from twitchtube.video import render
@@ -54,10 +54,13 @@ while True:
                             dump(config, f, indent=4)
 
                     if UPLOAD_TO_YOUTUBE and RENDER_VIDEO:
-                        try:
-                            upload_video_to_youtube(config)
-                        except JSONDecodeError:
-                            log.error("Your client_secret is empty or has wrong syntax")
+                        upload = Upload(ROOT_PROFILE_PATH, config, SLEEP)
+                        was_uploaded, video_id = upload.upload()
+
+                        if was_uploaded:
+                            log.info(f"{video_id} was successfully uploaded to YouTube")
+                        else:
+                            log.error("Video was not successfully uploaded to YouTube")
 
                     if DELETE_CLIPS:
                         # Get all the mp4 files in the path and delte them
