@@ -14,8 +14,16 @@ OAUTH_TOKEN = ""
 # Path to the Firefox profile where you are logged into YouTube
 ROOT_PROFILE_PATH = ""
 
+# Selenium
 # How many seconds Firefox should sleep for when uploading
 SLEEP = 3
+
+# If True Firefox will be hidden (True/False)
+HEADLESS = True
+
+# If information when uploading should be printed (True/False)
+DEBUG = True
+
 
 # Paths
 PATH = str(pathlib.Path().absolute()).replace("\\", "/")
@@ -24,11 +32,11 @@ CLIP_PATH = PATH + "/clips/{}/{}"
 
 # Video
 # Set the mode (game/channel)
-MODE = "channel"
+MODE = "game"
 
 # If mode is channel put channel names e.g. ["trainwreckstv", "xqcow"]
 # If mode is game put game names e.g. ["Team Fortress 2", "Just Chatting"]
-LIST = ["trainwreckstv", "xqcow"]
+LIST = ["Team Fortress 2", "Just Chatting"]
 
 # If clips should be rendered into one video (True/False)
 # If set to False everything else under Video will be ignored
@@ -102,16 +110,22 @@ TITLE = ""
 # Not supported yet
 CATEGORY = 20  # 20 for gaming
 
-# Tags
-# Not supported yet
-TAGS = {
-    "Just Chatting": "just chatting, just chatting clips, just chatting twitch clips",
-    "Team Fortress 2": "tf2, tf2 twitch, tf2 twitch clips",
-}
-
 # Descriptions
 # {} will be replaced with a list of streamer names
 DESCRIPTIONS = {
     "Just Chatting": "Just Chatting twitch clips \n\n{}\n",
     "Team Fortress 2": "TF2 twitch clips\n\n{}\n",
+}
+
+# Thumbnails
+THUMBNAILS = {
+    "Just Chatting": "path/to/file.jpg",
+    "Team Fortress 2": "path/to/file.jpg",
+}
+
+# Tags
+# Not supported yet
+TAGS = {
+    "Just Chatting": "just chatting, just chatting clips, just chatting twitch clips",
+    "Team Fortress 2": "tf2, tf2 twitch, tf2 twitch clips",
 }
