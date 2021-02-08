@@ -96,8 +96,6 @@ DESCRIPTIONS = {
 }
 ```
 
-Counter-Strike: Global Offensive is currently not supported since folders cannot include colons in their folder name.
-
 
 ## Running
 To run the bot, use this command. Has to be in same directory as the  `requirements.txt` and `main.py` files are.
