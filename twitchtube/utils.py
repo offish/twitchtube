@@ -1,4 +1,5 @@
 from datetime import date
+from re import sub
 import json
 
 from .config import *
@@ -11,25 +12,37 @@ def get_date() -> str:
     return date.today().strftime("%b-%d-%Y")
 
 
+def get_path(category: str) -> str:
+    return CLIP_PATH.format(get_date(), category.replace(":", ""))
+
+
 def create_video_config(category: str, streamers: list) -> dict:
     """
     Creates the video config used for uploading to YouTube
     returns a dict.
     """
     return {
-        "category": CATEGORY,
-        "keywords": get_tags(category),
-        "description": get_description(category, streamers),
         "title": get_title(category),
+        "description": get_description(category, streamers),
+        "thumbnail": get_thumbnail(category),
+        "keywords": get_tags(category),
+        "category": CATEGORY,
         "file": get_file(category),
     }
 
 
-def get_tags(category: str) -> str:
+def get_title(category: str) -> str:
     """
-    Gets the tag for given category (if any) as a string.
+    Gets the title and returns it as a string.
     """
-    return str(TAGS.get(category))
+    if TITLE:
+        return TITLE
+
+    title = json.loads(open(f"{get_path(category)}/clips.json", "r").read())
+
+    for i in title:
+        # Return the first entry's title
+        return f"{title[i]['title']} - {category} Twitch Highlights"
 
 
 def get_description(category: str, streamers: list) -> str:
@@ -47,24 +60,19 @@ def get_description(category: str, streamers: list) -> str:
     return names
 
 
-def get_title(category: str) -> str:
-    """
-    Gets the title and returns it as a string.
-    """
-    if TITLE:
-        return TITLE
+def get_thumbnail(category: str) -> str:
+    return THUMBNAILS.get(category)
 
-    title = json.loads(
-        open(f"{CLIP_PATH.format(get_date(), category)}/clips.json", "r").read()
-    )
 
-    for i in title:
-        # Return the first entry's title
-        return f"{title[i]['title']} - {category} Twitch Highlights"
+def get_tags(category: str) -> str:
+    """
+    Gets the tag for given category (if any) as a string.
+    """
+    return str(TAGS.get(category))
 
 
 def get_file(category: str) -> str:
     """
     Gets the path/file given category and returns it as a string.
     """
-    return f"{CLIP_PATH.format(get_date(), category)}/{FILE_NAME}.mp4"
+    return f"{get_path(category)}/{FILE_NAME}.mp4"
