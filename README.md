@@ -83,19 +83,44 @@ MODE = "game"
 
 LIST = ["Just Chatting"]
 
-TITLE = "Most Viewed Just Chatting Clips - 24.01.2021"
+TITLE = "Most Viewed Just Chatting Clips - 14.02.2021"
 
-# Tags are currently not supported
-TAGS = {
-    "Just Chatting": "just chatting, just chatting twitch, just chatting twitch highlights"
-}
-
-# Descriptions are though
 DESCRIPTIONS = {
     "Just Chatting": "The most viewed Just Chatting clips today.\n\n{}\n #Twitch #TwitchHighlights #Just Chatting"
 }
+
+THUMBNAILS = {
+    "Just Chatting": "path/to/file.jpg"
+}
+
+# Currently not supported
+TAGS = {
+    "Just Chatting": "just chatting, just chatting twitch, just chatting twitch highlights"
+}
 ```
 
+or
+
+```python
+MODE = "channel"
+
+LIST = ["xQcOW"]
+
+TITLE = "Most Viewed Just xQc Clips - 14.02.2021"
+
+DESCRIPTIONS = {
+    "xQcOW": "The most viewed xQc clips today.\n\n{}\n #Twitch #TwitchHighlights #xQcOW"
+}
+
+THUMBNAILS = {
+    "xQcOW": "path/to/file.jpg"
+}
+
+# Currently not supported
+TAGS = {
+    "xQcOW": "xqc, xqc twitch, xqc twitch highlights"
+}
+```
 
 ## Running
 To run the bot, use this command. Has to be in same directory as the  `requirements.txt` and `main.py` files are.
