@@ -14,16 +14,16 @@ Automatically make video compilations of the most viewed Twitch clips and upload
 ## Features
 * Downloads the most popular clips from given `channel` or `game`
 * Downloads only the needed clips to reach `VIDEO_LENGTH`
-* Upload automatically to YouTube using Selenium and Firefox
+* Uploads automatically to YouTube using Selenium and Firefox
 * Customizable
-* Option for concatninating clips into one video 
+* Option for concatenating clips into one video 
 * Option for custom intro, transition and outro
 * Option for custom resolution
 * Option for custom frame rate
 * Option for minimum video length
 * Option for automatically uploading to YouTube
-* Option for creating a json file with title, description and tags for given category if upload fails or is turned off
-* Option for automatically deleting clips after render is done
+* Option for creating a JSON file with title, description and tags for given category
+* Option for automatically deleting clips after renderering
 
 ## Example
 ![Screenshot](https://user-images.githubusercontent.com/30203217/103347433-4e5a7400-4a97-11eb-833a-0f5d59b0cd7e.png)
@@ -56,7 +56,8 @@ Scopes does not matter in our case. Click "Connect" and then authorize with Twit
 Copy your OAuth Token, go to [`config.py`](twitchtube/config.py), find `OAUTH_TOKEN` and paste it inside the apostrophes.
 
 ### Setting up Firefox
-Open Firefox and create a new profile for Selenium, (this is not needed, but highly recommended). Go to `about:profiles` and click "Create a New profile", name it "Selenium" or whatever. When you have done that, copy the "Root Directory" path of that profile and paste it into the `ROOT_PROFILE_PATH` in [`config.py`](twitchtube/config.py). Now click "Launch profile in new browser". Go to [YouTube](https://youtube.com) and login to the account you want to use with twitchtube. Voilà, you are now set. You migth want to set another profile to your default profile though. 
+Open Firefox and create a new profile for Selenium, (this is not needed, but highly recommended). Go to `about:profiles` and click "Create a New profile", name it "Selenium" or whatever. When you have done that, copy the "Root Directory" path of that profile and paste it into the `ROOT_PROFILE_PATH` in [`config.py`](twitchtube/config.py). Now click "Launch profile in new browser". Go to [YouTube](https://youtube.com) and login to the account you want to use with twitchtube. Voilà, you are now set. 
+*Don't use Selenium as your default profile.* 
 
 ### Adding and removing games or channels to LIST
 **`LIST` MUST MATCH `MODE`. IF `MODE` IS SET TO `GAME`, THERE SHOULD ONLY BE GAMES INSIDE OF `LIST`, SAME GOES FOR `CHANNEL`.**
@@ -106,7 +107,7 @@ MODE = "channel"
 
 LIST = ["xQcOW"]
 
-TITLE = "Most Viewed Just xQc Clips - 14.02.2021"
+TITLE = "Most Viewed xQc Clips - 14.02.2021"
 
 DESCRIPTIONS = {
     "xQcOW": "The most viewed xQc clips today.\n\n{}\n #Twitch #TwitchHighlights #xQcOW"
@@ -130,7 +131,7 @@ python main.py
 ``` 
 
 ## Note
-I have only tested this bot using Windows 10 and Python 3.7.3, but should work on other operating systems, and Python 3 versions.
+I've only tested this bot using Windows 10 and Python 3.7.3, but should work with other operating systems, and Python 3 versions.
 
 ## License
 MIT License
