@@ -30,14 +30,6 @@ PATH = str(pathlib.Path().absolute()).replace("\\", "/")
 CLIP_PATH = PATH + "/clips/{}/{}"
 
 
-# Video
-# Set the mode (game/channel)
-MODE = "game"
-
-# If mode is channel put channel names e.g. ["trainwreckstv", "xqcow"]
-# If mode is game put game names e.g. ["Team Fortress 2", "Just Chatting"]
-LIST = ["Team Fortress 2", "Just Chatting"]
-
 # If clips should be rendered into one video (True/False)
 # If set to False everything else under Video will be ignored
 RENDER_VIDEO = True
@@ -58,8 +50,6 @@ RESIZE_CLIPS = True
 # Name of the rendered video
 FILE_NAME = "rendered"
 
-# Name of downloaded clip (slug/title)
-CLIP_TITLE = "slug"
 
 # Enable (True/False)
 # Resize (True/False) read RESIZE_CLIPS
@@ -106,26 +96,11 @@ PARAMS = {"period": "day", "language": "en", "limit": 100}  # 100 is max
 # If empty, it would take the title of the first clip, and add "- *category* Highlights Twitch"
 TITLE = ""
 
-# Category
-# Not supported yet
-CATEGORY = 20  # 20 for gaming
-
-# Descriptions
-# {} will be replaced with a list of streamer names
-DESCRIPTIONS = {
-    "Just Chatting": "Just Chatting twitch clips \n\n{}\n",
-    "Team Fortress 2": "TF2 twitch clips\n\n{}\n",
-}
+DESCRIPTION = "Streamers in this video:\n"
 
 # Thumbnails
-THUMBNAILS = {
-    "Just Chatting": "path/to/file.jpg",
-    "Team Fortress 2": "path/to/file.jpg",
-}
+THUMBNAIL = ""
 
 # Tags
-# Not supported yet
-TAGS = {
-    "Just Chatting": "just chatting, just chatting clips, just chatting twitch clips",
-    "Team Fortress 2": "tf2, tf2 twitch, tf2 twitch clips",
-}
+
+TAGS = ["twitch", "just chatting", "xqc"]
