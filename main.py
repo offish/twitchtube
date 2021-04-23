@@ -1,23 +1,68 @@
-from pathlib import Path
-from time import sleep
-from json import dump, JSONDecodeError
-from glob import glob
-import os
-
 from twitchtube.logging import Log
 from twitchtube.config import *
-from twitchtube.utils import create_video_config, get_path
-from twitchtube.clips import get_clips, download_clips
-from twitchtube.video import render
+from twitchtube.video import make_video
+from twitchtube.utils import get_path
 from twitchtube import __name__, __version__
 
-from opplast import Upload
+import argparse
 
 
 log = Log()
 
 log.info(f"Running {__name__} at v{__version__}")
 
+
+# [("game", "Just Chatting"), ("channel", "xQcOW")]
+
+
+"""data = [("game", "Just Chatting"), ("channel", "xQcOW"), ("channel", "Trainwreckstv")]
+
+make_video(data, video_length=0.2)"""
+
+parser = argparse.ArgumentParser(description="Optional app description")
+
+# Required positional argument
+parser.add_argument(
+    "-data",
+    "--data",
+    nargs="+",
+    help="A required integer positional argument",
+    required=True,
+)
+parser.add_argument("--path", type=str, help="An optional integer argument")
+parser.add_argument("--render_video", type=bool, help="An optional integer argument")
+parser.add_argument("--resolution", type=tuple, help="An optional integer argument")
+parser.add_argument("--frames", type=int, help="An optional integer argument")
+parser.add_argument("--video_length", type=float, help="An optional integer argument")
+parser.add_argument("--resize_clips", type=bool, help="An optional integer argument")
+parser.add_argument("--file_name", type=str, help="An optional integer argument")
+parser.add_argument("--upload_video", type=bool, help="An optional integer argument")
+parser.add_argument("--title", type=str, help="An optional integer argument")
+parser.add_argument("--description", type=str, help="An optional integer argument")
+parser.add_argument("--thumbnail", type=str, help="An optional integer argument")
+parser.add_argument("--tags", nargs="+", help="An optional integer argument")
+
+args = parser.parse_args()
+
+print(args.data)
+
+make_video(
+    args.data,
+    path=args.path if args.path else get_path(),
+    render_video=args.render_video if args.render_video else RENDER_VIDEO,
+    resolution=args.resolution if args.resolution else RESOLUTION,
+    frames=args.frames if args.frames else FRAMES,
+    video_length=args.video_length if args.video_length else VIDEO_LENGTH,
+    resize_clips=args.resize_clips if args.resize_clips else RESIZE_CLIPS,
+    file_name=args.file_name if args.file_name else FILE_NAME,
+    upload_video=args.upload_video if args.upload_video else UPLOAD_TO_YOUTUBE,
+    title=args.title if args.title else TITLE,
+    description=args.description if args.description else DESCRIPTION,
+    thumbnail=args.thumbnail if args.thumbnail else THUMBNAIL,
+    tags=args.tags if args.tags else TAGS,
+)
+
+"""
 while True:
 
     for category in LIST:
@@ -103,3 +148,4 @@ while True:
 
     # Sleep for given timeout to check if it's a different date
     sleep(TIMEOUT)
+"""
