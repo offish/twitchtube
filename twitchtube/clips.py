@@ -4,10 +4,8 @@ import urllib.request
 import re
 
 from .logging import Log
-from .config import *
+from .config import HEADERS, PARAMS
 from .api import get
-
-import requests
 
 
 log = Log()
@@ -72,80 +70,72 @@ def download_clip(clip: str, basepath: str) -> None:
     Downloads the clip, does not return anything.
     """
     slug = get_slug(clip)
-    mp4_url, clip_title = get_clip_data(slug)
+    mp4_url, _ = get_clip_data(slug)
     # Remove special characters so we can save the video
     regex = re.compile("[^a-zA-Z0-9_]")
-    clip_title = clip_title.replace(" ", "_") if CLIP_TITLE == "title" else slug
-    out_filename = regex.sub("", clip_title) + ".mp4"
+    out_filename = regex.sub("", slug) + ".mp4"
     output_path = basepath + "/" + out_filename
 
     log.info(f"Downloading clip with slug: {slug}.")
-    log.info(f"Saving '{clip_title}' as '{out_filename}'.")
+    log.info(f"Saving '{slug}' as '{out_filename}'.")
     # Download the clip with given mp4_url
     urllib.request.urlretrieve(mp4_url, output_path, reporthook=get_progress)
-    log.info(f"{slug} has been downloaded.")
+    log.info(f"{slug} has been downloaded.\n")
 
 
-def get_clips(category: str, path: str) -> dict:
+def get_clips(
+    category: str, name: str, path: str, seconds: float, ids: list
+) -> (dict, list):
     """
     Gets the top clips for given game, returns JSON response
     from the Kraken API endpoint.
     """
     data = {}
+    new_ids = []
 
-    PARAMS[MODE] = category
+    PARAMS[category] = name
 
     response = get("top_clips", headers=HEADERS, params=PARAMS)
 
-    if "clips" in response:
-
-        for clip in response["clips"]:
-            data[clip["tracking_id"]] = {
-                "url": "https://clips.twitch.tv/" + clip["slug"],
-                "title": clip["title"],
-                "display_name": clip["broadcaster"]["display_name"],
-                "duration": clip["duration"],
-            }
-
-        # Save the data to a JSON file
-        with open(f"{path}/clips.json", "w") as f:
-            dump(data, f, indent=4)
-
-        return data
-
-    else:
+    if not response.get("clips"):
         log.error(f"Could not find 'clips' in response. {response}")
 
         return {}
 
+    for clip in response["clips"]:
+        duration = clip["duration"]
 
-def download_clips(data: dict, length: float, path: str) -> list:
+        if seconds <= 0.0:
+            break
+
+        tracking_id = clip["tracking_id"]
+
+        if not tracking_id in ids:
+            data[clip["tracking_id"]] = {
+                "url": "https://clips.twitch.tv/" + clip["slug"],
+                "title": clip["title"],
+                "display_name": clip["broadcaster"]["display_name"],
+                "duration": duration,
+            }
+            new_ids.append(tracking_id)
+
+            seconds -= duration
+
+    return (data, new_ids)
+
+
+def download_clips(data: dict, path: str) -> list:
     """
     Downloads clips, returns a list of streamer names.
     """
-    amount = 0
-    length *= 60
     names = []
 
     for clip in data:
-
         download_clip(data[clip]["url"], path)
-        length -= data[clip]["duration"]
 
         name = data[clip]["display_name"]
-        amount += 1
 
-        if name not in names:
-            names.append(name)
+        names.append(name)
 
-        log.info(f"Remaining video length: {ceil(length)} seconds.\n")
-
-        # If the rendered video would be long enough
-        # we break out of the loop, else continue
-        if length <= 0:
-            break
-
-    # If the rendered video would be long enough or we
-    # have ran out of clips, we return the streamer names
-    log.info(f"Downloaded {amount} clips.\n")
+    log.info(f"Downloaded {len(data)} clips from this batch.\n")
     return names
