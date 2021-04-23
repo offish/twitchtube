@@ -1,12 +1,90 @@
+from pathlib import Path
 import os
 
-from twitchtube.logging import Log
-from twitchtube.config import *
+from .logging import Log
+from .config import *
+from .exceptions import *
+from .utils import get_path, create_video_config
+from .clips import get_clips, download_clips
 
 from moviepy.editor import VideoFileClip, concatenate_videoclips
+from opplast import Upload
 
 
 log = Log()
+
+# add language as param
+def make_video(
+    data: list,
+    path: str = get_path(),
+    render_video: bool = RENDER_VIDEO,
+    resolution: tuple = RESOLUTION,
+    frames: int = FRAMES,
+    video_length: float = VIDEO_LENGTH,
+    resize_clips: bool = RESIZE_CLIPS,
+    file_name: str = FILE_NAME,
+    upload_video: bool = UPLOAD_TO_YOUTUBE,
+    title: str = TITLE,
+    description: str = DESCRIPTION,
+    thumbnail: str = THUMBNAIL,
+    tags: list = TAGS,
+):
+    clips = []
+    names = []
+    ids = []
+
+    video_length *= 60
+
+    seconds = round(video_length / len(data), 1)
+
+    log.info(f"Starting to make video with {len(data)} streamers/games")
+
+    if os.path.exists(f"{path}/{file_name}.mp4"):
+        raise VideoPathAlreadyExists("specify another path")
+
+    # first we get all the clips for every entry in data
+    for entry in data:
+        category, name = entry.split(" ", 1)
+
+        if not (category == "game" or category == "channel"):
+            raise InvalidCategory(
+                category + ' is not supported. Use "game" or "channel"'
+            )
+
+        # so we dont add the same clip twice
+        new_clips, new_ids = get_clips(category, name, path, seconds, ids)
+
+        ids += new_ids
+        clips.append(new_clips)
+
+    Path(path).mkdir(parents=True, exist_ok=True)
+
+    for batch in clips:
+        names += download_clips(batch, path)
+
+    # remove duplicate names
+    names = list(dict.fromkeys(names))
+
+    config = create_video_config(
+        path, file_name, title, description, thumbnail, tags, names
+    )
+
+    if render_video:
+        render(path, file_name)
+
+        if upload_video:
+            upload = Upload(ROOT_PROFILE_PATH, SLEEP, HEADLESS, DEBUG)
+
+            log.info("Trying to upload video to YouTube")
+
+            try:
+                was_uploaded, video_id = upload.upload(config)
+
+                if was_uploaded:
+                    log.info(f"{video_id} was successfully uploaded to YouTube")
+
+            except Exception as e:
+                log.error(f"There was an error {e} when trying to upload to YouTube")
 
 
 def get_clip_paths(path: str) -> list:
@@ -23,7 +101,7 @@ def add_clip(path: str, resize: bool = True) -> VideoFileClip:
     return VideoFileClip(path, target_resolution=RESOLUTION if resize else None)
 
 
-def render(path: str) -> None:
+def render(path: str, file_name: str) -> None:
     """
     Concatenates a video with given path.
     Finds every mp4 file in given path, downloads
@@ -63,7 +141,7 @@ def render(path: str) -> None:
 
     final = concatenate_videoclips(video, method="compose")
     final.write_videofile(
-        f"{path}/{FILE_NAME}.mp4",
+        f"{path}/{file_name}.mp4",
         fps=FRAMES,
         temp_audiofile=f"{path}/temp-audio.m4a",
         remove_temp=True,
