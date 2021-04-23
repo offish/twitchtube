@@ -11,25 +11,16 @@
 
 Automatically make video compilations of the most viewed Twitch clips and upload them to YouTube using Python 3. 
 
-## Features
-* Downloads the most popular clips from given `channel` or `game`
-* Downloads only the needed clips to reach `VIDEO_LENGTH`
-* Uploads automatically to YouTube using Selenium and Firefox
-* Customizable
-* Option for concatenating clips into one video 
-* Option for custom intro, transition and outro
-* Option for custom resolution
-* Option for custom frame rate
-* Option for minimum video length
-* Option for automatically uploading to YouTube
-* Option for creating a JSON file with title, description and tags for given category
-* Option for automatically deleting clips after renderering
+## Usage
+```
+python main.py -data "game Just Chatting" "channel xQcOW" --video_length 5.3 --title "my original title"
+```
 
-## Example
-![Screenshot](https://user-images.githubusercontent.com/30203217/103347433-4e5a7400-4a97-11eb-833a-0f5d59b0cd7e.png)
+or you can make and run a file like  `example.py`
 
-[Here](https://www.youtube.com/channel/UCd0wttXr03lIcTLv38U5d-w) is an example of how the videos look like on YouTube. Majority of these videos are made using
-this repo. Only a couple of titles and thumbnails have been changed.
+```
+python example.py
+```
 
 ## Installation
 Download the repo as ZIP and unzip it somewhere accessible.
@@ -59,76 +50,16 @@ Copy your OAuth Token, go to [`config.py`](twitchtube/config.py), find `OAUTH_TO
 Open Firefox and create a new profile for Selenium, (this is not needed, but highly recommended). Go to `about:profiles` and click "Create a New profile", name it "Selenium" or whatever. When you have done that, copy the "Root Directory" path of that profile and paste it into the `ROOT_PROFILE_PATH` in [`config.py`](twitchtube/config.py). Now click "Launch profile in new browser". Go to [YouTube](https://youtube.com) and login to the account you want to use with twitchtube. Voilà, you are now set. 
 *Don't use Selenium as your default profile.* 
 
-### Adding and removing games or channels to LIST
-**`LIST` MUST MATCH `MODE`. IF `MODE` IS SET TO `GAME`, THERE SHOULD ONLY BE GAMES INSIDE OF `LIST`, SAME GOES FOR `CHANNEL`.**
-
-If you want to add a game or channel, you simply write the name of the game or channel, how it appears on Twitch, inside the `LIST` in [`config.py`](twitchtube/config.py).
-If you want to add Rust for example, then `LIST` should look like this:
-
+### Example config
 ```python
-LIST = ["Rust", "Just Chatting", "Team Fortress 2"]
-```
-
-Last entry in the list should not have a comma.
-
-If you only want to have one game or channel, `LIST` should look like this:
-
-```python
-LIST = ["Just Chatting"]
-```
-
-Example:
-
-```python
-MODE = "game"
-
-LIST = ["Just Chatting"]
-
 TITLE = "Most Viewed Just Chatting Clips - 14.02.2021"
 
-DESCRIPTIONS = {
-    "Just Chatting": "The most viewed Just Chatting clips today.\n\n{}\n #Twitch #TwitchHighlights #Just Chatting"
-}
+DESCRIPTION = "Streamers in this video:\n"
 
-THUMBNAILS = {
-    "Just Chatting": "path/to/file.jpg"
-}
+THUMBNAIL = ""
 
-# Currently not supported
-TAGS = {
-    "Just Chatting": "just chatting, just chatting twitch, just chatting twitch highlights"
-}
+TAGS = ["twitch", "just chatting", "xqc"]
 ```
-
-or
-
-```python
-MODE = "channel"
-
-LIST = ["xQcOW"]
-
-TITLE = "Most Viewed xQc Clips - 14.02.2021"
-
-DESCRIPTIONS = {
-    "xQcOW": "The most viewed xQc clips today.\n\n{}\n #Twitch #TwitchHighlights #xQcOW"
-}
-
-THUMBNAILS = {
-    "xQcOW": "path/to/file.jpg"
-}
-
-# Currently not supported
-TAGS = {
-    "xQcOW": "xqc, xqc twitch, xqc twitch highlights"
-}
-```
-
-## Running
-To run the bot, use this command. Has to be in same directory as the  `requirements.txt` and `main.py` files are.
-
-```
-python main.py
-``` 
 
 ## Note
 I've only tested this bot using Windows 10 and Python 3.7.3, but should work with other operating systems, and Python 3 versions.
