@@ -16,7 +16,7 @@ Example of making a video through terminal
 ```python
 python main.py "g Just Chatting, c xQcOW, c Trainwreckstv" --duration 10.5 --resolution 1080 1920 --title "Top Just Chatting, xQc and Trainwrecks Twitch Clips Today" --tags "xqc, trainwrecks, twitch clips, xqc twitch, trainwrecks twitch"
 ```
-`"g"` indicates game, `"c"` indicates channel. You can also use `"channel"` or `"game"`.
+`g` indicates game, `c` indicates channel. You can also use `channel` and or `game`.
 
 The only parameter required is `data`. **Every other parameter that is not specified, will default to an assigned value in [`config.py`](twitchtube/config.py).**
 
@@ -59,7 +59,7 @@ You can now check if it works by running this command in the terminal:
 ```text
 geckodriver --version
 ```
-If done correctly, you should now see the version number and some licensing text.
+If geckodriver has been added to PATH, you should now see the current version number and some licensing text.
 
 ## Configuration
 ### Creating your Twitch Application
@@ -151,6 +151,7 @@ def make_video(
 ) -> None:
     ...
 ```
+Information about every parameter can be found in [`config.py`](twitchtube/config.py).
 
 ## Troubleshooting
 ### Uploading
