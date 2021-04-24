@@ -17,7 +17,7 @@ def request(endpoint: str, headers: dict, params: dict) -> dict:
 def data(slug: str) -> dict:
     return request(
         "helix/clips",
-        {"Authorization": f"Bearer {OAUTH_TOKEN}", "Client-Id": CLIENT_ID},
+        {"Authorization": "Bearer " + OAUTH_TOKEN, "Client-Id": CLIENT_ID},
         {"id": slug},
     )
 

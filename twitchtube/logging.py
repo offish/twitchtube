@@ -27,3 +27,6 @@ class Log:
 
     def warn(self, text: str):
         log(f.MAGENTA, "warn", text)
+
+    def clip(self, text: str):
+        log(f.CYAN, "clip", text)

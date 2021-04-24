@@ -1,8 +1,8 @@
 from datetime import date
-from re import sub
-import json
+from string import ascii_lowercase, digits
+from random import choice
 
-from .config import *
+from .config import CLIP_PATH
 
 
 def get_date() -> str:
@@ -12,67 +12,32 @@ def get_date() -> str:
     return date.today().strftime("%b-%d-%Y")
 
 
-def get_path(category: str) -> str:
-    return CLIP_PATH.format(get_date(), category.replace(":", ""))
+def get_path() -> str:
+    return CLIP_PATH.format(
+        get_date(),
+        "".join(choice(ascii_lowercase + digits) for _ in range(5)),
+    )
 
 
-def create_video_config(category: str, streamers: list) -> dict:
-    """
-    Creates the video config used for uploading to YouTube
-    returns a dict.
-    """
+def get_description(description: str, names: list) -> str:
+    for name in names:
+        description += f"https://twitch.tv/{name}\n"
+    return description
+
+
+def create_video_config(
+    path: str,
+    file_name: str,
+    title: str,
+    description: str,
+    thumbnail: str,
+    tags: list,
+    names: list,
+) -> dict:
     return {
-        "title": get_title(category),
-        "description": get_description(category, streamers),
-        "thumbnail": get_thumbnail(category),
-        "keywords": get_tags(category),
-        "category": CATEGORY,
-        "file": get_file(category),
+        "file": f"{path}/{file_name}.mp4",
+        "title": title,
+        "description": get_description(description, names),
+        "thumbnail": thumbnail,
+        "tags": tags,
     }
-
-
-def get_title(category: str) -> str:
-    """
-    Gets the title and returns it as a string.
-    """
-    if TITLE:
-        return TITLE
-
-    title = json.loads(open(f"{get_path(category)}/clips.json", "r").read())
-
-    for i in title:
-        # Return the first entry's title
-        return f"{title[i]['title']} - {category} Twitch Highlights"
-
-
-def get_description(category: str, streamers: list) -> str:
-    """
-    Gets the description with given list of streamers
-    and category, returns the description as a string.
-    """
-    names = "Streamers in this video:\n"
-
-    for name in streamers:
-        names += f"https://twitch.tv/{name}\n"
-
-    if category in DESCRIPTIONS:
-        return DESCRIPTIONS[category].format(names)
-    return names
-
-
-def get_thumbnail(category: str) -> str:
-    return THUMBNAILS.get(category)
-
-
-def get_tags(category: str) -> str:
-    """
-    Gets the tag for given category (if any) as a string.
-    """
-    return str(TAGS.get(category))
-
-
-def get_file(category: str) -> str:
-    """
-    Gets the path/file given category and returns it as a string.
-    """
-    return f"{get_path(category)}/{FILE_NAME}.mp4"

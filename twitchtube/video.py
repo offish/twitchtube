@@ -1,12 +1,171 @@
+from pathlib import Path
+from json import dump
+from glob import glob
 import os
 
-from twitchtube.logging import Log
-from twitchtube.config import *
+
+from .logging import Log
+from .config import *
+from .exceptions import *
+from .utils import get_path, create_video_config
+from .clips import get_clips, download_clips
 
 from moviepy.editor import VideoFileClip, concatenate_videoclips
+from opplast import Upload
 
 
 log = Log()
+
+# add language as param
+def make_video(
+    # required
+    data: list,
+    # other
+    path: str = get_path(),
+    # twitch
+    client_id: str = CLIENT_ID,
+    oauth_token: str = OAUTH_TOKEN,
+    period: str = PERIOD,
+    language: str = LANGUAGE,
+    limit: int = LIMIT,
+    # selenium
+    profile_path: str = ROOT_PROFILE_PATH,
+    sleep: int = SLEEP,
+    headless: bool = HEADLESS,
+    debug: bool = DEBUG,
+    # video options
+    render_video: bool = RENDER_VIDEO,
+    file_name: str = FILE_NAME,
+    resolution: tuple = RESOLUTION,
+    frames: int = FRAMES,
+    video_length: float = VIDEO_LENGTH,
+    resize_clips: bool = RESIZE_CLIPS,
+    enable_intro: bool = ENABLE_INTRO,
+    resize_intro: bool = RESIZE_INTRO,
+    intro_path: str = INTRO_FILE_PATH,
+    enable_transition: bool = ENABLE_TRANSITION,
+    resize_transition: bool = RESIZE_TRANSITION,
+    transition_path: str = TRANSITION_FILE_PATH,
+    enable_outro: bool = ENABLE_OUTRO,
+    resize_outro: bool = RESIZE_OUTRO,
+    outro_path: str = OUTRO_FILE_PATH,
+    # other options
+    save_file: bool = SAVE_TO_FILE,
+    save_file_name: str = SAVE_FILE_NAME,
+    upload_video: bool = UPLOAD_TO_YOUTUBE,
+    delete_clips: bool = DELETE_CLIPS,
+    # youtube
+    title: str = TITLE,
+    description: str = DESCRIPTION,
+    thumbnail: str = THUMBNAIL,
+    tags: list = TAGS,
+) -> None:
+    clips = []
+    names = []
+    ids = []
+
+    video_length *= 60
+
+    seconds = round(video_length / len(data), 1)
+
+    log.info(f"Starting to make video with {len(data)} streamers/games")
+
+    if os.path.exists(f"{path}/{file_name}.mp4"):
+        raise VideoPathAlreadyExists("specify another path")
+
+    # first we get all the clips for every entry in data
+    for entry in data:
+        category, name = entry.split(" ", 1)
+        if category == "g":
+            category = "game"
+
+        if category == "c":
+            category = "channel"
+
+        if not (category == "game" or category == "channel"):
+            raise InvalidCategory(
+                category + ' is not supported. Use "g", "game", "c" or "channel"'
+            )
+
+        # so we dont add the same clip twice
+        new_clips, new_ids = get_clips(
+            category,
+            name,
+            path,
+            seconds,
+            ids,
+            client_id,
+            oauth_token,
+            period,
+            language,
+            limit,
+        )
+
+        ids += new_ids
+        clips.append(new_clips)
+
+    Path(path).mkdir(parents=True, exist_ok=True)
+
+    for batch in clips:
+        names += download_clips(batch, path)
+
+    log.info(f"Downloaded a total of {len(ids)} clips")
+
+    # remove duplicate names
+    names = list(dict.fromkeys(names))
+
+    config = create_video_config(
+        path, file_name, title, description, thumbnail, tags, names
+    )
+
+    if save_file:
+        with open(path + f"/{save_file_name}.json", "w") as f:
+            dump(config, f, indent=4)
+
+    if render_video:
+        render(
+            path,
+            file_name,
+            resolution,
+            frames,
+            resize_clips,
+            enable_intro,
+            resize_intro,
+            intro_path,
+            enable_transition,
+            resize_transition,
+            transition_path,
+            enable_outro,
+            resize_outro,
+            outro_path,
+        )
+
+        if upload_video:
+            upload = Upload(profile_path, sleep, headless, debug)
+
+            log.info("Trying to upload video to YouTube")
+
+            try:
+                was_uploaded, video_id = upload.upload(config)
+
+                if was_uploaded:
+                    log.info(f"{video_id} was successfully uploaded to YouTube")
+
+            except Exception as e:
+                log.error(f"There was an error {e} when trying to upload to YouTube")
+
+    if delete_clips:
+        log.info("Getting files to delete...")
+        files = glob(f"{path}/*.mp4")
+
+        for file in files:
+            if not file.replace("\\", "/") == path + f"/{file_name}.mp4":
+                try:
+                    os.remove(file)
+                    log.clip(f"Deleted {file.replace(path, '')}")
+
+                except Exception as e:
+                    log.clip(f"Could not delete {file} because {e}")
 
 
 def get_clip_paths(path: str) -> list:
@@ -19,11 +178,26 @@ def get_clip_paths(path: str) -> list:
     ]
 
 
-def add_clip(path: str, resize: bool = True) -> VideoFileClip:
-    return VideoFileClip(path, target_resolution=RESOLUTION if resize else None)
+def add_clip(path: str, resolution: tuple, resize: bool = True) -> VideoFileClip:
+    return VideoFileClip(path, target_resolution=resolution if resize else None)
 
 
-def render(path: str) -> None:
+def render(
+    path: str,
+    file_name: str,
+    resolution: tuple,
+    frames: int,
+    resize_clips: bool,
+    enable_intro: bool,
+    resize_intro: bool,
+    intro_path: str,
+    enable_transition: bool,
+    resize_transition: bool,
+    transition_path: str,
+    enable_outro: bool,
+    resize_outro: bool,
+    outro_path: str,
+) -> None:
     """
     Concatenates a video with given path.
     Finds every mp4 file in given path, downloads
@@ -33,8 +207,8 @@ def render(path: str) -> None:
 
     video = []
 
-    if ENABLE_INTRO:
-        video.append(add_clip(INTRO_FILE_PATH, RESIZE_INTRO == True))
+    if enable_intro:
+        video.append(add_clip(intro_path, resolution, resize_intro == True))
 
     number = 0
 
@@ -43,10 +217,12 @@ def render(path: str) -> None:
     for clip in clips:
 
         # Don't add transition if it's the first or last clip
-        if ENABLE_TRANSITION and not (number == 0 or number == len(clips)):
-            video.append(add_clip(TRANSITION_FILE_PATH, RESIZE_TRANSITION == True))
+        if enable_transition and not (number == 0 or number == len(clips)):
+            video.append(
+                add_clip(transition_path, resolution, resize_transition == True)
+            )
 
-        video.append(add_clip(clip, RESIZE_CLIPS == True))
+        video.append(add_clip(clip, resolution, resize_clips == True))
 
         # Just so we get cleaner logging
         name = clip.replace(path, "").replace("_", " ").replace("\\", "")
@@ -58,13 +234,13 @@ def render(path: str) -> None:
         del clip
         del name
 
-    if ENABLE_OUTRO:
-        video.append(add_clip(OUTRO_FILE_PATH, RESIZE_OUTRO == True))
+    if enable_outro:
+        video.append(add_clip(outro_path, resolution, resize_outro == True))
 
     final = concatenate_videoclips(video, method="compose")
     final.write_videofile(
-        f"{path}/{FILE_NAME}.mp4",
-        fps=FRAMES,
+        f"{path}/{file_name}.mp4",
+        fps=frames,
         temp_audiofile=f"{path}/temp-audio.m4a",
         remove_temp=True,
         codec="libx264",
