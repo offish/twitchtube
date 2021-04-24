@@ -39,6 +39,7 @@ while True:
         video_length=10.5,
         resolution=(1080, 1920),
         frames=60,
+        period="day",
     )
     sleep(24 * 60 * 60) # make a video daily
 ```
