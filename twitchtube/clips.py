@@ -3,8 +3,8 @@ from json import dump
 import urllib.request
 import re
 
+from .exceptions import WrongKrakenResponse
 from .logging import Log
-from .config import HEADERS, PARAMS
 from .api import get
 
 
@@ -21,8 +21,7 @@ def get_data(slug: str) -> dict:
     try:
         return response["data"][0]
     except KeyError as e:
-        log.error(f"Ran into exception: {e}")
-        log.error(f"Response: {response}")
+        log.error(f"Ran into exception: {e}, {response}")
         return response
 
 
@@ -76,15 +75,24 @@ def download_clip(clip: str, basepath: str) -> None:
     out_filename = regex.sub("", slug) + ".mp4"
     output_path = basepath + "/" + out_filename
 
-    log.info(f"Downloading clip with slug: {slug}.")
-    log.info(f"Saving '{slug}' as '{out_filename}'.")
+    log.clip(f"Downloading clip with slug: {slug}.")
+    log.clip(f"Saving '{slug}' as '{out_filename}'.")
     # Download the clip with given mp4_url
     urllib.request.urlretrieve(mp4_url, output_path, reporthook=get_progress)
-    log.info(f"{slug} has been downloaded.\n")
+    log.clip(f"{slug} has been downloaded.\n")
 
 
 def get_clips(
-    category: str, name: str, path: str, seconds: float, ids: list
+    category: str,
+    name: str,
+    path: str,
+    seconds: float,
+    ids: list,
+    client_id: str,
+    oauth_token: str,
+    period: str,
+    language: str,
+    limit: int,
 ) -> (dict, list):
     """
     Gets the top clips for given game, returns JSON response
@@ -93,14 +101,31 @@ def get_clips(
     data = {}
     new_ids = []
 
-    PARAMS[category] = name
+    headers = {"Accept": "application/vnd.twitchtv.v5+json", "Client-ID": client_id}
 
-    response = get("top_clips", headers=HEADERS, params=PARAMS)
+    params = {"period": period, "language": language, "limit": limit}
+    params[category] = name
+
+    response = get("top_clips", headers=headers, params=params)
 
     if not response.get("clips"):
-        log.error(f"Could not find 'clips' in response. {response}")
+        if response.get("error") == "Internal Server Error":
+            # the error is twitch's fault, we try again
+            get_clips(
+                category,
+                name,
+                path,
+                seconds,
+                ids,
+                client_id,
+                oauth_token,
+                period,
+                language,
+                limit,
+            )
 
-        return {}
+        else:
+            raise WrongKrakenResponse(f"Could not find 'clips' in response. {response}")
 
     for clip in response["clips"]:
         duration = clip["duration"]
