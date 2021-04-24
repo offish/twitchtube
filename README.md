@@ -9,60 +9,157 @@
 [![Donate Steam](https://img.shields.io/badge/donate-steam-green.svg)](https://steamcommunity.com/tradeoffer/new/?partner=293059984&token=0-l_idZR)
 [![Donate PayPal](https://img.shields.io/badge/donate-paypal-blue.svg)](https://www.paypal.me/0ffish)
 
-Automatically make video compilations of the most viewed Twitch clips and upload them to YouTube using Python 3. 
+Automatically make video compilations of the most viewed Twitch clips, and upload them to YouTube using Python 3. 
 
 ## Usage
+Example of making a video through terminal
+```python
+python main.py "g Just Chatting, c xQcOW, c Trainwreckstv" --duration 10.5 --resolution 1080 1920 --title "Top Just Chatting, xQc and Trainwrecks Twitch Clips Today" --tags "xqc, trainwrecks, twitch clips, xqc twitch, trainwrecks twitch"
 ```
-python main.py -data "game Just Chatting" "channel xQcOW" --video_length 5.3 --title "my original title"
+`"g"` indicates game, `"c"` indicates channel. You can also use `"channel"` or `"game"`.
+
+The only parameter required is `data`. **Every other parameter that is not specified, will default to an assigned value in [`config.py`](twitchtube/config.py).**
+
+Example of minium required input:
+
+```python
+python main.py "channel maskenissen"
 ```
 
-or you can make and run a file like  `example.py`
+You can also run the bot from a Python file like [`example.py`](example.py)
+```python
+from time import sleep
+from twitchtube.video import make_video
 
-```
-python example.py
+while True:
+    make_video(
+        ["channel xQcOW", "game Just Chatting"],
+        client_id="1hq8ektpki36w5kn37mluioungyqjo",  # example client id (fake)
+        oauth_token="9f5einm9qtp0bj4m9l1ykevpwdn98o",  # example token (fake)
+        video_length=10.5,
+        resolution=(1080, 1920),
+        frames=60,
+    )
+    sleep(24 * 60 * 60) # make a video daily
 ```
 
 ## Installation
-Download the repo as ZIP and unzip it somewhere accessible.
+Download the repo as ZIP and unzip it somewhere accessible, or use git.
 
-To install all the packages needed, you have to run this command. Has to be in same directory as the `requirements.txt` and `main.py` files are.
+To install all the packages needed, you have to run this command, by being in the same directory as the `requirements.txt` and `main.py` files are.
 
 ```
 pip install -r requirements.txt 
 ```
 
-Download [geckodriver](https://github.com/mozilla/geckodriver/releases) and place the .exe file inside `C:\Users\USERNAME\AppData\Local\Programs\Python\Python37`.
+Download [geckodriver](https://github.com/mozilla/geckodriver/releases) and add it to PATH. If you are on Windows you can follow [this post](https://softwaretestingboard.com/q2a/2366/how-to-set-geckodriver-into-path-environment-variable).
+
+You can now check if it works by running this command in the terminal:
+```text
+geckodriver --version
+```
+If done correctly, you should now see the version number and some licensing text.
 
 ## Configuration
 ### Creating your Twitch Application
-Go to https://dev.twitch.tv/console and register a new application.
+![image](https://user-images.githubusercontent.com/30203217/115958371-7e76c880-a507-11eb-8748-7bbc5f497a68.png)
+
+Go to https://dev.twitch.tv/console/apps/create and register a new application.
 The name of the application does not matter. Set "OAuth Redirect URLs" to https://twitchapps.com/tokengen/
+
 Set category to "Application Integration" or "Other". 
-You will now see your Client ID, copy this ID.
-Go to [`config.py`](twitchtube/config.py), find `CLIENT_ID` and paste it inside apostrophes.
+
+
+![image](https://user-images.githubusercontent.com/30203217/115958430-cbf33580-a507-11eb-963e-14a7dccbfd7d.png)
+
+Click "Manage".
+
+![image](https://user-images.githubusercontent.com/30203217/115958485-eb8a5e00-a507-11eb-98f8-c01b4dabd163.png)
+
+Copy the Client ID and go to [`config.py`](twitchtube/config.py). 
+Find `CLIENT_ID` and paste it inside apostrophes.
 
 ### Getting your OAuth Token
-Now head over to https://twitchapps.com/tokengen/ and paste in your Client ID.
+![image](https://user-images.githubusercontent.com/30203217/115958569-402dd900-a508-11eb-8464-676b927acff5.png)
+
+Now head over to https://twitchapps.com/tokengen/ and paste in your Client ID, which you just copied.
 Scopes does not matter in our case. Click "Connect" and then authorize with Twitch.
-Copy your OAuth Token, go to [`config.py`](twitchtube/config.py), find `OAUTH_TOKEN` and paste it inside the apostrophes.
+
+![image](https://user-images.githubusercontent.com/30203217/115958582-5b004d80-a508-11eb-8e29-91669c71e987.png)
+
+Copy your OAuth Token and go to [`config.py`](twitchtube/config.py), find `OAUTH_TOKEN` and paste it inside the apostrophes.
 
 ### Setting up Firefox
-Open Firefox and create a new profile for Selenium, (this is not needed, but highly recommended). Go to `about:profiles` and click "Create a New profile", name it "Selenium" or whatever. When you have done that, copy the "Root Directory" path of that profile and paste it into the `ROOT_PROFILE_PATH` in [`config.py`](twitchtube/config.py). Now click "Launch profile in new browser". Go to [YouTube](https://youtube.com) and login to the account you want to use with twitchtube. Voilà, you are now set. 
+
+Open Firefox and create a new profile for Selenium, (this is not needed, but highly recommended). Go to `about:profiles` and click "Create a New profile", name it "Selenium" or whatever. 
+
+![image](https://user-images.githubusercontent.com/30203217/115958696-c0543e80-a508-11eb-9d76-6ef5fd33e889.png)
+
+Copy the "Root Directory" path of that profile and paste it into the `ROOT_PROFILE_PATH` in [`config.py`](twitchtube/config.py). Now click "Launch profile in new browser". Go to [YouTube](https://youtube.com) and login to the account you want to use with twitchtube.
+
+
 *Don't use Selenium as your default profile.* 
 
-### Example config
+You can now save your `config`.
+
+### Parameters
+These are all the parameters `make_video` takes
 ```python
-TITLE = "Most Viewed Just Chatting Clips - 14.02.2021"
-
-DESCRIPTION = "Streamers in this video:\n"
-
-THUMBNAIL = ""
-
-TAGS = ["twitch", "just chatting", "xqc"]
+def make_video(
+    # required
+    data: list,
+    # other
+    path: str = get_path(),
+    # twitch
+    client_id: str = CLIENT_ID,
+    oauth_token: str = OAUTH_TOKEN,
+    period: str = PERIOD,
+    language: str = LANGUAGE,
+    limit: int = LIMIT,
+    # selenium
+    profile_path: str = ROOT_PROFILE_PATH,
+    sleep: int = SLEEP,
+    headless: bool = HEADLESS,
+    debug: bool = DEBUG,
+    # video options
+    render_video: bool = RENDER_VIDEO,
+    file_name: str = FILE_NAME,
+    resolution: tuple = RESOLUTION,
+    frames: int = FRAMES,
+    video_length: float = VIDEO_LENGTH,
+    resize_clips: bool = RESIZE_CLIPS,
+    enable_intro: bool = ENABLE_INTRO,
+    resize_intro: bool = RESIZE_INTRO,
+    intro_path: str = INTRO_FILE_PATH,
+    enable_transition: bool = ENABLE_TRANSITION,
+    resize_transition: bool = RESIZE_TRANSITION,
+    transition_path: str = TRANSITION_FILE_PATH,
+    enable_outro: bool = ENABLE_OUTRO,
+    resize_outro: bool = RESIZE_OUTRO,
+    outro_path: str = OUTRO_FILE_PATH,
+    # other options
+    save_file: bool = SAVE_TO_FILE,
+    save_file_name: str = SAVE_FILE_NAME,
+    upload_video: bool = UPLOAD_TO_YOUTUBE,
+    delete_clips: bool = DELETE_CLIPS,
+    # youtube
+    title: str = TITLE,
+    description: str = DESCRIPTION,
+    thumbnail: str = THUMBNAIL,
+    tags: list = TAGS,
+) -> None:
+    ...
 ```
 
-## Note
-I've only tested this bot using Windows 10 and Python 3.7.3, but should work with other operating systems, and Python 3 versions.
+## Troubleshooting
+### Uploading
+If you're having issues uploading try to update [opplast](https://github.com/offish/opplast).
+```
+pip install --upgrade opplast
+```
+Sometimes YouTube is weird, so trying multiple times *might* work. 
+Set `debug=True` and `headless=False` to see what it's actually doing. Increasing `sleep` *might* also work. 
+If you have configured everything correctly, and are still running into errors, leave a detailed issue [here](https://github.com/offish/opplast/issues).
 
 ## License
 MIT License
