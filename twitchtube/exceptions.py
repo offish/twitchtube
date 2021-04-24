@@ -4,3 +4,7 @@ class InvalidCategory(Exception):
 
 class VideoPathAlreadyExists(Exception):
     pass
+
+
+class WrongKrakenResponse(Exception):
+    pass
