@@ -11,12 +11,12 @@ from .api import get
 log = Log()
 
 
-def get_data(slug: str) -> dict:
+def get_data(slug: str, oauth_token: str, client_id: str) -> dict:
     """
     Gets the data from a given slug,
     returns a JSON respone from the Helix API endpoint
     """
-    response = get("data", slug=slug)
+    response = get("data", slug=slug, oauth_token=oauth_token, client_id=client_id)
 
     try:
         return response["data"][0]
@@ -25,13 +25,13 @@ def get_data(slug: str) -> dict:
         return response
 
 
-def get_clip_data(slug: str) -> tuple:
+def get_clip_data(slug: str, oauth_token: str, client_id: str) -> tuple:
     """
     Gets the data for given slug, returns a tuple first
     entry being the mp4_url used to download the clip,
     second entry being the title of the clip to be used as filename.
     """
-    clip_info = get_data(slug)
+    clip_info = get_data(slug, oauth_token, client_id)
 
     if "thumbnail_url" in clip_info and "title" in clip_info:
         # All to get what we need to return
@@ -64,12 +64,12 @@ def get_slug(clip: str) -> str:
     return slug[len(slug) - 1]
 
 
-def download_clip(clip: str, basepath: str) -> None:
+def download_clip(clip: str, basepath: str, oauth_token: str, client_id: str) -> None:
     """
     Downloads the clip, does not return anything.
     """
     slug = get_slug(clip)
-    mp4_url, _ = get_clip_data(slug)
+    mp4_url, _ = get_clip_data(slug, oauth_token, client_id)
     # Remove special characters so we can save the video
     regex = re.compile("[^a-zA-Z0-9_]")
     out_filename = regex.sub("", slug) + ".mp4"
@@ -103,8 +103,11 @@ def get_clips(
 
     headers = {"Accept": "application/vnd.twitchtv.v5+json", "Client-ID": client_id}
 
-    params = {"period": period, "language": language, "limit": limit}
+    params = {"period": period, "limit": limit}
     params[category] = name
+
+    if language:
+        params["language"] = language
 
     response = get("top_clips", headers=headers, params=params)
 
@@ -149,14 +152,14 @@ def get_clips(
     return (data, new_ids)
 
 
-def download_clips(data: dict, path: str) -> list:
+def download_clips(data: dict, path: str, oauth_token: str, client_id: str) -> list:
     """
     Downloads clips, returns a list of streamer names.
     """
     names = []
 
     for clip in data:
-        download_clip(data[clip]["url"], path)
+        download_clip(data[clip]["url"], path, oauth_token, client_id)
 
         name = data[clip]["display_name"]
 
