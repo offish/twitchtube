@@ -1,13 +1,6 @@
 import argparse
 
-from twitchtube.logging import Log
 from twitchtube.video import make_video
-from twitchtube import __name__, __version__
-
-
-log = Log()
-
-log.info(f"Running {__name__} at v{__version__}")
 
 
 parser = argparse.ArgumentParser(description="")
@@ -26,6 +19,7 @@ def str_to_bool(value):
 
 parser.add_argument("data", type=str, help="")
 parser.add_argument("--path", type=str, help="")
+parser.add_argument("--check_version", type=str_to_bool, help="")
 parser.add_argument("--client_id", type=str, help="")
 parser.add_argument("--oauth_token", type=str, help="")
 parser.add_argument("--period", type=str, help="")
