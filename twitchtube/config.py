@@ -7,7 +7,9 @@ import pathlib
 # other
 PATH = str(pathlib.Path().absolute()).replace("\\", "/")
 CLIP_PATH = PATH + "/clips/{}/{}"
-
+CHECK_VERSION = (
+    True  # see if youre running the latest version of twitchtube and opplast
+)
 
 # twitch
 CLIENT_ID = ""  # Twitch Client ID
