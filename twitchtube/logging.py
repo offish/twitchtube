@@ -26,7 +26,7 @@ class Log:
         log(f.RED, "error", text)
 
     def warn(self, text: str):
-        log(f.MAGENTA, "warn", text)
+        log(f.YELLOW, "warn", text)
 
     def clip(self, text: str):
         log(f.CYAN, "clip", text)
