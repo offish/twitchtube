@@ -111,6 +111,7 @@ def make_video(
     data: list,
     # other
     path: str = get_path(),
+    check_version: bool = CHECK_VERSION,
     # twitch
     client_id: str = CLIENT_ID,
     oauth_token: str = OAUTH_TOKEN,
