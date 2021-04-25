@@ -4,6 +4,8 @@ from random import choice
 
 from .config import CLIP_PATH
 
+from requests import get
+
 
 def get_date() -> str:
     """
@@ -23,6 +25,16 @@ def get_description(description: str, names: list) -> str:
     for name in names:
         description += f"https://twitch.tv/{name}\n"
     return description
+
+
+def get_current_version(project: str) -> str:
+    txt = '__version__ = "'
+    response = get(
+        f"https://raw.githubusercontent.com/offish/{project}/master/{project}/__init__.py"
+    ).text
+    response = response[response.index(txt) :].replace(txt, "")
+
+    return response[: response.index('"\n')].replace('"', "")
 
 
 def create_video_config(
