@@ -1,7 +1,5 @@
 import json
 
-from .config import OAUTH_TOKEN, CLIENT_ID
-
 import requests
 
 
@@ -14,10 +12,10 @@ def request(endpoint: str, headers: dict, params: dict) -> dict:
     )
 
 
-def data(slug: str) -> dict:
+def data(slug: str, oauth_token: str, client_id: str) -> dict:
     return request(
         "helix/clips",
-        {"Authorization": "Bearer " + OAUTH_TOKEN, "Client-Id": CLIENT_ID},
+        {"Authorization": "Bearer " + oauth_token, "Client-Id": client_id},
         {"id": slug},
     )
 
