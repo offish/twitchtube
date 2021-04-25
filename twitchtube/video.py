@@ -3,16 +3,15 @@ from json import dump
 from glob import glob
 import os
 
-
+from twitchtube import __version__ as twitchtube_version
+from .exceptions import *
 from .logging import Log
 from .config import *
-from .exceptions import *
-from .utils import get_path, create_video_config
+from .utils import get_path, create_video_config, get_current_version
 from .clips import get_clips, download_clips
 
 from moviepy.editor import VideoFileClip, concatenate_videoclips
-from opplast import Upload
-
+from opplast import Upload, __version__ as opplast_version
 
 log = Log()
 
@@ -22,6 +21,7 @@ def make_video(
     data: list,
     # other
     path: str = get_path(),
+    check_version: bool = CHECK_VERSION,
     # twitch
     client_id: str = CLIENT_ID,
     oauth_token: str = OAUTH_TOKEN,
@@ -60,6 +60,33 @@ def make_video(
     thumbnail: str = THUMBNAIL,
     tags: list = TAGS,
 ) -> None:
+    if check_version:
+        try:
+
+            for project, version in zip(
+                [
+                    "twitchtube",
+                    "opplast",
+                ],
+                [
+                    twitchtube_version,
+                    opplast_version,
+                ],
+            ):
+                current = get_current_version(project)
+
+                if current != version:
+                    log.warn(
+                        f"You're running an old version of {project}, installed: {version}, current: {current}"
+                    )
+                else:
+                    log.info(
+                        f"You're running the latest version of {project} at {version}"
+                    )
+
+        except Exception as e:
+            print(e)
+
     clips = []
     names = []
     ids = []
@@ -68,7 +95,9 @@ def make_video(
 
     seconds = round(video_length / len(data), 1)
 
-    log.info(f"Starting to make video with {len(data)} streamers/games")
+    log.info(
+        f"Going to make video featuring {len(data)} streamers/games, that will end up being ~{seconds} seconds long"
+    )
 
     if os.path.exists(f"{path}/{file_name}.mp4"):
         raise VideoPathAlreadyExists("specify another path")
@@ -107,7 +136,7 @@ def make_video(
     Path(path).mkdir(parents=True, exist_ok=True)
 
     for batch in clips:
-        names += download_clips(batch, path)
+        names += download_clips(batch, path, oauth_token, client_id)
 
     log.info(f"Downloaded a total of {len(ids)} clips")
 
