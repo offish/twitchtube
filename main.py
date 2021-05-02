@@ -17,7 +17,7 @@ def str_to_bool(value):
         raise argparse.ArgumentTypeError("Boolean value expected.")
 
 
-parser.add_argument("data", type=str, help="")
+parser.add_argument("--data", type=str, help="")
 parser.add_argument("--path", type=str, help="")
 parser.add_argument("--check_version", type=str_to_bool, help="")
 parser.add_argument("--client_id", type=str, help="")

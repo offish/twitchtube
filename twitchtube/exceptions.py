@@ -6,5 +6,5 @@ class VideoPathAlreadyExists(Exception):
     pass
 
 
-class WrongKrakenResponse(Exception):
+class NoClipsFound(Exception):
     pass

@@ -13,12 +13,13 @@ from .clips import get_clips, download_clips
 from moviepy.editor import VideoFileClip, concatenate_videoclips
 from opplast import Upload, __version__ as opplast_version
 
+
 log = Log()
 
 # add language as param
 def make_video(
     # required
-    data: list,
+    data: list = DATA,
     # other
     path: str = get_path(),
     check_version: bool = CHECK_VERSION,
@@ -87,6 +88,7 @@ def make_video(
         except Exception as e:
             print(e)
 
+    titles = []
     clips = []
     names = []
     ids = []
@@ -117,7 +119,7 @@ def make_video(
             )
 
         # so we dont add the same clip twice
-        new_clips, new_ids = get_clips(
+        new_clips, new_ids, new_titles = get_clips(
             category,
             name,
             path,
@@ -130,8 +132,13 @@ def make_video(
             limit,
         )
 
-        ids += new_ids
-        clips.append(new_clips)
+        if new_clips:
+            ids += new_ids
+            titles += new_titles
+            clips.append(new_clips)
+
+    if not clips:
+        raise NoClipsFound("Did not find any clips")
 
     Path(path).mkdir(parents=True, exist_ok=True)
 
@@ -142,6 +149,9 @@ def make_video(
 
     # remove duplicate names
     names = list(dict.fromkeys(names))
+
+    if not title:
+        title = titles[0]
 
     config = create_video_config(
         path, file_name, title, description, thumbnail, tags, names
@@ -195,6 +205,8 @@ def make_video(
 
                 except Exception as e:
                     log.clip(f"Could not delete {file} because {e}")
+
+    log.info("Done!")
 
 
 def get_clip_paths(path: str) -> list:

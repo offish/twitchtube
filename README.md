@@ -14,16 +14,28 @@ Automatically make video compilations of the most viewed Twitch clips, and uploa
 ## Usage
 Example of making a video through terminal
 ```python
-python main.py "g Just Chatting, c xQcOW, c Trainwreckstv" --duration 10.5 --resolution 1080 1920 --title "Top Just Chatting, xQc and Trainwrecks Twitch Clips Today" --tags "xqc, trainwrecks, twitch clips, xqc twitch, trainwrecks twitch"
+python main.py --data "g Just Chatting, c xQcOW, c Trainwreckstv" --client_id "1hq8ektpki36w5kn37mluioungyqjo" --oauth_token "9f5einm9qtp0bj4m9l1ykevpwdn98o" --duration 10.5 --resolution 1080 1920 --title "Top Just Chatting, xQc and Trainwrecks Twitch Clips Today" --tags "xqc, trainwrecks, twitch clips, xqc twitch, trainwrecks twitch"
 ```
-`g` indicates game, `c` indicates channel. You can also use `channel` and or `game`.
+`g` indicates game, `c` indicates channel. You can also use `channel` and `game`.
 
-The only parameter required is `data`. **Every other parameter that is not specified, will default to an assigned value in [`config.py`](twitchtube/config.py).**
+**Every parameter that is not specified, will default to an assigned value in [`config.py`](twitchtube/config.py).**
 
-Example of minium required input:
+Example of running with only default values:
 
+```text
+python main.py
+```
+
+[`config.py`](twitchtube/config.py):
 ```python
-python main.py "channel maskenissen"
+DATA = ["channel maskenissen"]
+
+CLIENT_ID = "1hq8ektpki36w5kn37mluioungyqjo"  # Twitch Client ID
+OAUTH_TOKEN = "9f5einm9qtp0bj4m9l1ykevpwdn98o"  # Twitch OAuth Token
+PERIOD = "day"  # day, week, month or all
+LANGUAGE = "en"  # en, es, th etc.
+LIMIT = 100  # 1-100
+...
 ```
 
 You can also run the bot from a Python file like [`example.py`](example.py)
@@ -33,13 +45,13 @@ from twitchtube.video import make_video
 
 while True:
     make_video(
-        ["channel xQcOW", "game Just Chatting"],
+        data=["channel xQcOW", "game Just Chatting"],
         client_id="1hq8ektpki36w5kn37mluioungyqjo",  # example client id (fake)
         oauth_token="9f5einm9qtp0bj4m9l1ykevpwdn98o",  # example token (fake)
-        video_length=10.5,
-        resolution=(1080, 1920),
+        video_length=10.5, # minutes as float
+        resolution=(1080, 1920), # height x width
         frames=60,
-        period="day",
+        period="day", # most viewed clips today
     )
     sleep(24 * 60 * 60) # make a video daily
 ```
@@ -108,7 +120,7 @@ These are all the parameters `make_video` takes
 ```python
 def make_video(
     # required
-    data: list,
+    data: list = DATA,
     # other
     path: str = get_path(),
     check_version: bool = CHECK_VERSION,

@@ -11,6 +11,8 @@ CHECK_VERSION = (
     True  # see if youre running the latest version of twitchtube and opplast
 )
 
+DATA = ["c xQcOW", "c Trainwreckstv", "g Just Chatting"]
+
 # twitch
 CLIENT_ID = ""  # Twitch Client ID
 OAUTH_TOKEN = ""  # Twitch OAuth Token
@@ -55,7 +57,7 @@ DELETE_CLIPS = True  # If the downloaded clips should be deleted after rendering
 
 
 # youtube
-TITLE = ""  # youtube title
+TITLE = ""  # youtube title, leave empty for the first clip's title
 DESCRIPTION = (
     "Streamers in this video:\n"  # youtube description, streamers will be added
 )

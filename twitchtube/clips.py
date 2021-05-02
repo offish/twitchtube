@@ -3,7 +3,6 @@ from json import dump
 import urllib.request
 import re
 
-from .exceptions import WrongKrakenResponse
 from .logging import Log
 from .api import get
 
@@ -93,13 +92,14 @@ def get_clips(
     period: str,
     language: str,
     limit: int,
-) -> (dict, list):
+) -> (dict, list, list):
     """
     Gets the top clips for given game, returns JSON response
     from the Kraken API endpoint.
     """
     data = {}
     new_ids = []
+    new_titles = []
 
     headers = {"Accept": "application/vnd.twitchtv.v5+json", "Client-ID": client_id}
 
@@ -128,28 +128,33 @@ def get_clips(
             )
 
         else:
-            raise WrongKrakenResponse(f"Could not find 'clips' in response. {response}")
+            log.warn(
+                f'Did not find "clips" in response {response} for {category} {name}, period: {period} language: {language}'
+            )
 
-    for clip in response["clips"]:
-        duration = clip["duration"]
+    if "clips" in response:
+        for clip in response["clips"]:
+            duration = clip["duration"]
 
-        if seconds <= 0.0:
-            break
+            if seconds <= 0.0:
+                break
 
-        tracking_id = clip["tracking_id"]
+            tracking_id = clip["tracking_id"]
 
-        if not tracking_id in ids:
-            data[clip["tracking_id"]] = {
-                "url": "https://clips.twitch.tv/" + clip["slug"],
-                "title": clip["title"],
-                "display_name": clip["broadcaster"]["display_name"],
-                "duration": duration,
-            }
-            new_ids.append(tracking_id)
+            if not tracking_id in ids:
+                data[clip["tracking_id"]] = {
+                    "url": "https://clips.twitch.tv/" + clip["slug"],
+                    "title": clip["title"],
+                    "display_name": clip["broadcaster"]["display_name"],
+                    "duration": duration,
+                }
+                new_ids.append(tracking_id)
+                new_titles.append(clip["title"])
+                seconds -= duration
 
-            seconds -= duration
+        return (data, new_ids, new_titles)
 
-    return (data, new_ids)
+    return ({}, [], [])
 
 
 def download_clips(data: dict, path: str, oauth_token: str, client_id: str) -> list:
