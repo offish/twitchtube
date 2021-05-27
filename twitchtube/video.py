@@ -107,8 +107,6 @@ def make_video(
 
     did_remove, data = remove_blacklisted(data, blacklist)
 
-    print(data)
-
     if did_remove:
         log.info("Data included blacklisted content and was removed")
 
