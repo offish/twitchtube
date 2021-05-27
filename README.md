@@ -61,7 +61,6 @@ while True:
 These are all the parameters `make_video` takes
 ```python
 def make_video(
-    # required
     data: list = DATA,
     blacklist: list = BLACKLIST,
     # other
