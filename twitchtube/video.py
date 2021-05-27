@@ -7,7 +7,7 @@ from twitchtube import __version__ as twitchtube_version
 from .exceptions import *
 from .logging import Log
 from .config import *
-from .utils import get_path, create_video_config, get_current_version
+from .utils import *
 from .clips import get_clips, download_clips
 
 from moviepy.editor import VideoFileClip, concatenate_videoclips
@@ -20,6 +20,7 @@ log = Log()
 def make_video(
     # required
     data: list = DATA,
+    blacklist: list = BLACKLIST,
     # other
     path: str = get_path(),
     check_version: bool = CHECK_VERSION,
@@ -104,22 +105,19 @@ def make_video(
     if os.path.exists(f"{path}/{file_name}.mp4"):
         raise VideoPathAlreadyExists("specify another path")
 
+    did_remove, data = remove_blacklisted(data, blacklist)
+
+    if did_remove:
+        log.info("Data included blacklisted content and was removed")
+
     # first we get all the clips for every entry in data
+    # some bug here with loop or something
     for entry in data:
-        category, name = entry.split(" ", 1)
-        if category == "g":
-            category = "game"
-
-        if category == "c":
-            category = "channel"
-
-        if not (category == "game" or category == "channel"):
-            raise InvalidCategory(
-                category + ' is not supported. Use "g", "game", "c" or "channel"'
-            )
+        category, name = get_category_and_name(entry)
 
         # so we dont add the same clip twice
         new_clips, new_ids, new_titles = get_clips(
+            blacklist,
             category,
             name,
             path,

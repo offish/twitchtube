@@ -58,6 +58,56 @@ while True:
     sleep(24 * 60 * 60) # make a video daily
 ```
 
+These are all the parameters `make_video` takes
+```python
+def make_video(
+    data: list = DATA,
+    blacklist: list = BLACKLIST,
+    # other
+    path: str = get_path(),
+    check_version: bool = CHECK_VERSION,
+    # twitch
+    client_id: str = CLIENT_ID,
+    oauth_token: str = OAUTH_TOKEN,
+    period: str = PERIOD,
+    language: str = LANGUAGE,
+    limit: int = LIMIT,
+    # selenium
+    profile_path: str = ROOT_PROFILE_PATH,
+    sleep: int = SLEEP,
+    headless: bool = HEADLESS,
+    debug: bool = DEBUG,
+    # video options
+    render_video: bool = RENDER_VIDEO,
+    file_name: str = FILE_NAME,
+    resolution: tuple = RESOLUTION,
+    frames: int = FRAMES,
+    video_length: float = VIDEO_LENGTH,
+    resize_clips: bool = RESIZE_CLIPS,
+    enable_intro: bool = ENABLE_INTRO,
+    resize_intro: bool = RESIZE_INTRO,
+    intro_path: str = INTRO_FILE_PATH,
+    enable_transition: bool = ENABLE_TRANSITION,
+    resize_transition: bool = RESIZE_TRANSITION,
+    transition_path: str = TRANSITION_FILE_PATH,
+    enable_outro: bool = ENABLE_OUTRO,
+    resize_outro: bool = RESIZE_OUTRO,
+    outro_path: str = OUTRO_FILE_PATH,
+    # other options
+    save_file: bool = SAVE_TO_FILE,
+    save_file_name: str = SAVE_FILE_NAME,
+    upload_video: bool = UPLOAD_TO_YOUTUBE,
+    delete_clips: bool = DELETE_CLIPS,
+    # youtube
+    title: str = TITLE,
+    description: str = DESCRIPTION,
+    thumbnail: str = THUMBNAIL,
+    tags: list = TAGS,
+) -> None:
+    ...
+```
+Information about every parameter can be found in [`config.py`](twitchtube/config.py).
+
 ## Installation
 Download the repo as ZIP and unzip it somewhere accessible, or use git.
 
@@ -116,57 +166,6 @@ Copy the "Root Directory" path of that profile and paste it into the `ROOT_PROFI
 *Don't use Selenium as your default profile.* 
 
 You can now save your `config`.
-
-### Parameters
-These are all the parameters `make_video` takes
-```python
-def make_video(
-    # required
-    data: list = DATA,
-    # other
-    path: str = get_path(),
-    check_version: bool = CHECK_VERSION,
-    # twitch
-    client_id: str = CLIENT_ID,
-    oauth_token: str = OAUTH_TOKEN,
-    period: str = PERIOD,
-    language: str = LANGUAGE,
-    limit: int = LIMIT,
-    # selenium
-    profile_path: str = ROOT_PROFILE_PATH,
-    sleep: int = SLEEP,
-    headless: bool = HEADLESS,
-    debug: bool = DEBUG,
-    # video options
-    render_video: bool = RENDER_VIDEO,
-    file_name: str = FILE_NAME,
-    resolution: tuple = RESOLUTION,
-    frames: int = FRAMES,
-    video_length: float = VIDEO_LENGTH,
-    resize_clips: bool = RESIZE_CLIPS,
-    enable_intro: bool = ENABLE_INTRO,
-    resize_intro: bool = RESIZE_INTRO,
-    intro_path: str = INTRO_FILE_PATH,
-    enable_transition: bool = ENABLE_TRANSITION,
-    resize_transition: bool = RESIZE_TRANSITION,
-    transition_path: str = TRANSITION_FILE_PATH,
-    enable_outro: bool = ENABLE_OUTRO,
-    resize_outro: bool = RESIZE_OUTRO,
-    outro_path: str = OUTRO_FILE_PATH,
-    # other options
-    save_file: bool = SAVE_TO_FILE,
-    save_file_name: str = SAVE_FILE_NAME,
-    upload_video: bool = UPLOAD_TO_YOUTUBE,
-    delete_clips: bool = DELETE_CLIPS,
-    # youtube
-    title: str = TITLE,
-    description: str = DESCRIPTION,
-    thumbnail: str = THUMBNAIL,
-    tags: list = TAGS,
-) -> None:
-    ...
-```
-Information about every parameter can be found in [`config.py`](twitchtube/config.py).
 
 ## Troubleshooting
 ### Uploading

@@ -4,6 +4,7 @@ import urllib.request
 import re
 
 from .logging import Log
+from .utils import format_blacklist, is_blacklisted
 from .api import get
 
 
@@ -82,6 +83,7 @@ def download_clip(clip: str, basepath: str, oauth_token: str, client_id: str) ->
 
 
 def get_clips(
+    blacklist: list,
     category: str,
     name: str,
     path: str,
@@ -109,12 +111,15 @@ def get_clips(
     if language:
         params["language"] = language
 
+    log.info(f"Getting clips for {category} {name}")
+
     response = get("top_clips", headers=headers, params=params)
 
     if not response.get("clips"):
         if response.get("error") == "Internal Server Error":
             # the error is twitch's fault, we try again
             get_clips(
+                blacklist,
                 category,
                 name,
                 path,
@@ -132,16 +137,17 @@ def get_clips(
                 f'Did not find "clips" in response {response} for {category} {name}, period: {period} language: {language}'
             )
 
+    formatted_blacklist = format_blacklist(blacklist)
+
     if "clips" in response:
         for clip in response["clips"]:
+            tracking_id = clip["tracking_id"]
             duration = clip["duration"]
 
             if seconds <= 0.0:
                 break
 
-            tracking_id = clip["tracking_id"]
-
-            if not tracking_id in ids:
+            if not tracking_id in ids and not is_blacklisted(clip, formatted_blacklist):
                 data[clip["tracking_id"]] = {
                     "url": "https://clips.twitch.tv/" + clip["slug"],
                     "title": clip["title"],

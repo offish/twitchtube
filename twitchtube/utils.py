@@ -2,6 +2,7 @@ from datetime import date
 from string import ascii_lowercase, digits
 from random import choice
 
+from .exceptions import InvalidCategory
 from .config import CLIP_PATH
 
 from requests import get
@@ -53,3 +54,60 @@ def create_video_config(
         "thumbnail": thumbnail,
         "tags": tags,
     }
+
+
+def get_category(category: str) -> str:
+    if category == "g" or category == "game":
+        return "game"
+
+    if category == "c" or category == "channel":
+        return "channel"
+
+    raise InvalidCategory(
+        category + ' is not supported. Use "g", "game", "c" or "channel"'
+    )
+
+
+def get_category_and_name(entry: str) -> (str, str):
+    _category, name = entry.split(" ", 1)
+    category = get_category(_category)
+
+    return (category, name)
+
+
+def remove_blacklisted(data: list, blacklist: list) -> (bool, list):
+    did_remove = False
+
+    for d in data:
+        d_category, d_name = get_category_and_name(d)
+
+        for b in blacklist:
+            b_category, b_name = get_category_and_name(b)
+
+            if b_category == d_category and b_name == d_name:
+                data.remove(d)
+                did_remove = True
+
+    return (did_remove, data)
+
+
+def format_blacklist(blacklist: list) -> list:
+    formatted = []
+
+    for b in blacklist:
+        category, name = get_category_and_name(b)
+        formatted.append(category + " " + name)
+
+    return formatted
+
+
+def is_blacklisted(clip: dict, blacklist: list) -> bool:
+    if "broadcaster" in clip and clip["broadcaster"].get("name"):
+        if "channel " + clip["broadcaster"]["name"] in blacklist:
+            return True
+
+    if clip.get("game"):
+        if "game " + clip["game"] in blacklist:
+            return True
+
+    return False
