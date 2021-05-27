@@ -18,6 +18,7 @@ def str_to_bool(value):
 
 
 parser.add_argument("--data", type=str, help="")
+parser.add_argument("--blacklist", type=str, help="")
 parser.add_argument("--path", type=str, help="")
 parser.add_argument("--check_version", type=str_to_bool, help="")
 parser.add_argument("--client_id", type=str, help="")
@@ -62,7 +63,7 @@ for key in vars(args):
     try:
         if not arg == None:
 
-            if key == "tags" or key == "data":
+            if key == "tags" or key == "data" or key == "blacklist":
                 arg = arg.split(", ")
 
             if key == "resolution":
