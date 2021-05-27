@@ -12,6 +12,10 @@ CHECK_VERSION = (
 )
 
 DATA = ["c xQcOW", "c Trainwreckstv", "g Just Chatting"]
+BLACKLIST = [
+    "c ludwig",
+    "g Pools, Hot Tubs, and Beaches",
+]  # channels/games you dont want to be included in the video
 
 # twitch
 CLIENT_ID = ""  # Twitch Client ID
