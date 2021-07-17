@@ -2,10 +2,9 @@ from datetime import date
 from string import ascii_lowercase, digits
 from random import choice
 
+from .api import get
 from .exceptions import InvalidCategory
 from .config import CLIP_PATH
-
-from requests import get
 
 
 def get_date() -> str:
@@ -72,7 +71,28 @@ def get_category_and_name(entry: str) -> (str, str):
     _category, name = entry.split(" ", 1)
     category = get_category(_category)
 
-    return (category, name)
+    return category, name
+
+
+def convert_name_to_ids(data: list, oauth_token: str, client_id: str) -> list:
+    # all data that is gets
+    new_data = []
+    users_to_check, games_to_check = [], []
+    user_info, game_info = [], []
+
+    for entry in data:
+        cat, name = get_category_and_name(entry)
+        if cat == 'channel':
+            users_to_check.append(name)
+        elif cat == 'game':
+            games_to_check.append(name)
+
+    # if there are more than 100 entries in users_to_check or games_to_check, this *WILL NOT WORK*
+    if users_to_check:
+        user_info = get("user", user_list=users_to_check, oauth_token=oauth_token, client_id=client_id)["data"]
+    if games_to_check:
+        game_info = get("game", game_list=games_to_check, oauth_token=oauth_token, client_id=client_id)["data"]
+    return [('channel', i["id"]) for i in user_info] + [('game', i["id"]) for i in game_info]
 
 
 def remove_blacklisted(data: list, blacklist: list) -> (bool, list):
@@ -88,26 +108,21 @@ def remove_blacklisted(data: list, blacklist: list) -> (bool, list):
                 data.remove(d)
                 did_remove = True
 
-    return (did_remove, data)
+    return did_remove, data
 
 
-def format_blacklist(blacklist: list) -> list:
-    formatted = []
-
-    for b in blacklist:
-        category, name = get_category_and_name(b)
-        formatted.append(category + " " + name)
-
-    return formatted
+def format_blacklist(blacklist: list, oauth_token: str, client_id: str) -> list:
+    formatted = convert_name_to_ids(blacklist, oauth_token, client_id)
+    return [f'{i[0]} {i[1]}' for i in formatted]
 
 
 def is_blacklisted(clip: dict, blacklist: list) -> bool:
-    if "broadcaster" in clip and clip["broadcaster"].get("name"):
-        if "channel " + clip["broadcaster"]["name"] in blacklist:
+    if "broadcaster_id" in clip:
+        if "channel " + clip["broadcaster_id"].lower() in [i.lower() for i in blacklist]:
             return True
 
-    if clip.get("game"):
-        if "game " + clip["game"] in blacklist:
+    if clip.get("game_id"):
+        if "game " + clip["game_id"] in blacklist:
             return True
 
     return False
