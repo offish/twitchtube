@@ -1,26 +1,24 @@
 import pathlib
 
 # Note:
-# Changing FRAMES and or RESOULTION will heavily impact load on CPU.
+# Changing FRAMES and or RESOLUTION will heavily impact load on CPU.
 # If you have a powerful enough computer you may set it to 1080p60
 
 # other
 PATH = str(pathlib.Path().absolute()).replace("\\", "/")
 CLIP_PATH = PATH + "/clips/{}/{}"
-CHECK_VERSION = (
-    True  # see if youre running the latest version of twitchtube and opplast
-)
+CHECK_VERSION = True  # see if you're running the latest version of twitchtube and opplast
 
 DATA = ["c xQcOW", "c Trainwreckstv", "g Just Chatting"]
 BLACKLIST = [
-    "c ludwig",
+    "c tommyinnit",
     "g Pools, Hot Tubs, and Beaches",
 ]  # channels/games you dont want to be included in the video
 
 # twitch
 CLIENT_ID = ""  # Twitch Client ID
 OAUTH_TOKEN = ""  # Twitch OAuth Token
-PERIOD = "day"  # day, week, month or all
+PERIOD = 24  # how much hours since the clip's creation should've passed? e.g. 24, 48, 10
 LANGUAGE = "en"  # en, es, th etc.
 LIMIT = 100  # 1-100
 
@@ -28,7 +26,7 @@ LIMIT = 100  # 1-100
 # selenium
 ROOT_PROFILE_PATH = ""  # Path to the Firefox profile where you are logged into YouTube
 SLEEP = 3  # How many seconds Firefox should sleep for when uploading
-HEADLESS = True  # If True Firefox will be hidden (True/False)
+HEADLESS = False  # If True Firefox will be hidden (True/False)
 DEBUG = True  # If information when uploading should be printed (True/False)
 
 
