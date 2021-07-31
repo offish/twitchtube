@@ -83,17 +83,18 @@ def download_clip(clip: str, basepath: str, oauth_token: str, client_id: str) ->
 
 
 def get_clips(
-        blacklist: list,
-        category: str,
-        name: str,
-        path: str,
-        seconds: float,
-        ids: list,
-        client_id: str,
-        oauth_token: str,
-        period: int,
-        language: str,
-        limit: int,
+    blacklist: list,
+    category: str,
+    id_: str,
+    name: str,
+    path: str,
+    seconds: float,
+    ids: list,
+    client_id: str,
+    oauth_token: str,
+    period: int,
+    language: str,
+    limit: int,
 ) -> (dict, list, list):
     """
     Gets the top clips for given game, returns JSON response
@@ -108,16 +109,17 @@ def get_clips(
     # params = {"period": period, "limit": limit}
     params = {
         "ended_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
-        "started_at": (datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(hours=period)).isoformat(),
-        "first": limit
+        "started_at": (
+            datetime.datetime.now(datetime.timezone.utc)
+            - datetime.timedelta(hours=period)
+        ).isoformat(),
+        "first": limit,
     }
-    if category == 'channel':
-        params["broadcaster_id"] = name
-    elif category == 'game':
-        params["game_id"] = name
 
-    if language:
-        params["language"] = language
+    if category == "channel":
+        params["broadcaster_id"] = id_
+    else:
+        params["game_id"] = id_
 
     log.info(f"Getting clips for {category} {name}")
 
@@ -126,7 +128,7 @@ def get_clips(
     if not response.get("data"):
         if response.get("error") == "Internal Server Error":
             # the error is twitch's fault, we try again
-            return get_clips(
+            get_clips(
                 blacklist,
                 category,
                 name,
@@ -155,7 +157,11 @@ def get_clips(
             if seconds <= 0.0:
                 break
 
-            if clip_id not in ids and not is_blacklisted(clip, formatted_blacklist):
+            if (
+                clip_id not in ids
+                and not is_blacklisted(clip, formatted_blacklist)
+                and (language == clip["language"] or not language)
+            ):
                 data[clip["id"]] = {
                     "url": clip["url"],
                     "title": clip["title"],
