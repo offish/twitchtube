@@ -23,7 +23,7 @@ parser.add_argument("--path", type=str, help="")
 parser.add_argument("--check_version", type=str_to_bool, help="")
 parser.add_argument("--client_id", type=str, help="")
 parser.add_argument("--oauth_token", type=str, help="")
-parser.add_argument("--period", type=str, help="")
+parser.add_argument("--period", type=int, help="")
 parser.add_argument("--language", type=str, help="")
 parser.add_argument("--limit", type=int, help="")
 parser.add_argument("--profile_path", type=str, help="")
@@ -74,4 +74,6 @@ for key in vars(args):
     except Exception as e:
         print(e)
 
-make_video(**parameters)
+
+if __name__ == "__main__":
+    make_video(**parameters)

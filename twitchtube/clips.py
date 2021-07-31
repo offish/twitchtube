@@ -1,3 +1,4 @@
+import datetime
 from math import ceil
 from json import dump
 import urllib.request
@@ -6,7 +7,6 @@ import re
 from .logging import Log
 from .utils import format_blacklist, is_blacklisted
 from .api import get
-
 
 log = Log()
 
@@ -85,19 +85,20 @@ def download_clip(clip: str, basepath: str, oauth_token: str, client_id: str) ->
 def get_clips(
     blacklist: list,
     category: str,
+    id_: str,
     name: str,
     path: str,
     seconds: float,
     ids: list,
     client_id: str,
     oauth_token: str,
-    period: str,
+    period: int,
     language: str,
     limit: int,
 ) -> (dict, list, list):
     """
     Gets the top clips for given game, returns JSON response
-    from the Kraken API endpoint.
+    from the Helix API endpoint.
     """
     data = {}
     new_ids = []
@@ -105,17 +106,26 @@ def get_clips(
 
     headers = {"Accept": "application/vnd.twitchtv.v5+json", "Client-ID": client_id}
 
-    params = {"period": period, "limit": limit}
-    params[category] = name
+    # params = {"period": period, "limit": limit}
+    params = {
+        "ended_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+        "started_at": (
+            datetime.datetime.now(datetime.timezone.utc)
+            - datetime.timedelta(hours=period)
+        ).isoformat(),
+        "first": limit,
+    }
 
-    if language:
-        params["language"] = language
+    if category == "channel":
+        params["broadcaster_id"] = id_
+    else:
+        params["game_id"] = id_
 
     log.info(f"Getting clips for {category} {name}")
 
-    response = get("top_clips", headers=headers, params=params)
+    response = get("top_clips", headers=headers, params=params, oauth_token=oauth_token)
 
-    if not response.get("clips"):
+    if not response.get("data"):
         if response.get("error") == "Internal Server Error":
             # the error is twitch's fault, we try again
             get_clips(
@@ -134,33 +144,37 @@ def get_clips(
 
         else:
             log.warn(
-                f'Did not find "clips" in response {response} for {category} {name}, period: {period} language: {language}'
+                f'Did not find "data" in response {response} for {category} {name}, period: {period} language: {language}'
             )
 
-    formatted_blacklist = format_blacklist(blacklist)
+    formatted_blacklist = format_blacklist(blacklist, oauth_token, client_id)
 
-    if "clips" in response:
-        for clip in response["clips"]:
-            tracking_id = clip["tracking_id"]
+    if "data" in response:
+        for clip in response["data"]:
+            clip_id = clip["id"]
             duration = clip["duration"]
 
             if seconds <= 0.0:
                 break
 
-            if not tracking_id in ids and not is_blacklisted(clip, formatted_blacklist):
-                data[clip["tracking_id"]] = {
-                    "url": "https://clips.twitch.tv/" + clip["slug"],
+            if (
+                clip_id not in ids
+                and not is_blacklisted(clip, formatted_blacklist)
+                and (language == clip["language"] or not language)
+            ):
+                data[clip["id"]] = {
+                    "url": clip["url"],
                     "title": clip["title"],
-                    "display_name": clip["broadcaster"]["display_name"],
+                    "display_name": clip["broadcaster_name"],
                     "duration": duration,
                 }
-                new_ids.append(tracking_id)
+                new_ids.append(clip_id)
                 new_titles.append(clip["title"])
                 seconds -= duration
 
-        return (data, new_ids, new_titles)
+        return data, new_ids, new_titles
 
-    return ({}, [], [])
+    return {}, [], []
 
 
 def download_clips(data: dict, path: str, oauth_token: str, client_id: str) -> list:

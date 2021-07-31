@@ -32,7 +32,7 @@ DATA = ["channel maskenissen"]
 
 CLIENT_ID = "1hq8ektpki36w5kn37mluioungyqjo"  # Twitch Client ID
 OAUTH_TOKEN = "9f5einm9qtp0bj4m9l1ykevpwdn98o"  # Twitch OAuth Token
-PERIOD = "day"  # day, week, month or all
+PERIOD = 24  # day, week, month or all
 LANGUAGE = "en"  # en, es, th etc.
 LIMIT = 100  # 1-100
 ...
@@ -53,7 +53,7 @@ while True:
         video_length=10.5, # minutes as float
         resolution=(1080, 1920), # height x width
         frames=60,
-        period="day", # most viewed clips today
+        period=24, # most viewed clips today
     )
     sleep(24 * 60 * 60) # make a video daily
 ```
@@ -69,7 +69,7 @@ def make_video(
     # twitch
     client_id: str = CLIENT_ID,
     oauth_token: str = OAUTH_TOKEN,
-    period: str = PERIOD,
+    period: int = PERIOD,
     language: str = LANGUAGE,
     limit: int = LIMIT,
     # selenium

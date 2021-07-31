@@ -1,15 +1,14 @@
 import pathlib
 
 # Note:
-# Changing FRAMES and or RESOULTION will heavily impact load on CPU.
+# Changing FRAMES and or RESOLUTION will heavily impact load on CPU.
 # If you have a powerful enough computer you may set it to 1080p60
 
 # other
 PATH = str(pathlib.Path().absolute()).replace("\\", "/")
 CLIP_PATH = PATH + "/clips/{}/{}"
-CHECK_VERSION = (
-    True  # see if youre running the latest version of twitchtube and opplast
-)
+CHECK_VERSION = True  # see if you're running the latest versions
+DEBUG = True  # If additional/debug information should be printed (True/False)
 
 DATA = ["c xQcOW", "c Trainwreckstv", "g Just Chatting"]
 BLACKLIST = [
@@ -20,16 +19,15 @@ BLACKLIST = [
 # twitch
 CLIENT_ID = ""  # Twitch Client ID
 OAUTH_TOKEN = ""  # Twitch OAuth Token
-PERIOD = "day"  # day, week, month or all
+PERIOD = 24  # how many hours since the clip's creation should've passed e.g. 24, 48 etc
 LANGUAGE = "en"  # en, es, th etc.
 LIMIT = 100  # 1-100
 
 
 # selenium
-ROOT_PROFILE_PATH = ""  # Path to the Firefox profile where you are logged into YouTube
+ROOT_PROFILE_PATH = r""  # Path to the Firefox profile where you are logged into YouTube
 SLEEP = 3  # How many seconds Firefox should sleep for when uploading
-HEADLESS = True  # If True Firefox will be hidden (True/False)
-DEBUG = True  # If information when uploading should be printed (True/False)
+HEADLESS = False  # If True Firefox will be hidden (True/False)
 
 
 # video options
@@ -44,13 +42,13 @@ RESIZE_CLIPS = True  # Resize clips to fit RESOLUTION (True/False) If any RESIZE
 FILE_NAME = "rendered"  # Name of the rendered video
 ENABLE_INTRO = False  # Enable (True/False)
 RESIZE_INTRO = True  # Resize (True/False) read RESIZE_CLIPS
-INTRO_FILE_PATH = PATH + "/assets/intro.mp4"  # Path to video file (str)
+INTRO_FILE_PATH = PATH + "/twitchtube/files/intro.mp4"  # Path to video file (str)
 ENABLE_TRANSITION = True
 RESIZE_TRANSITION = True
-TRANSITION_FILE_PATH = PATH + "/assets/transition.mp4"
+TRANSITION_FILE_PATH = PATH + "/twitchtube/files/transition.mp4"
 ENABLE_OUTRO = False
 RESIZE_OUTRO = True
-OUTRO_FILE_PATH = PATH + "/assets/outro.mp4"
+OUTRO_FILE_PATH = PATH + "/twitchtube/files/outro.mp4"
 
 
 # other options
