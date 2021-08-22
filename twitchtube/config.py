@@ -25,9 +25,10 @@ LIMIT = 100  # 1-100
 
 
 # selenium
-ROOT_PROFILE_PATH = r""  # Path to the Firefox profile where you are logged into YouTube
+ROOT_PROFILE_PATH = r"C:/Users/USERNAME/AppData/Roaming/Mozilla/Firefox/Profiles/r4Nd0m.selenium"  # Path to the Firefox profile where you are logged into YouTube
+EXECUTABLE_PATH = r"geckodriver"
 SLEEP = 3  # How many seconds Firefox should sleep for when uploading
-HEADLESS = False  # If True Firefox will be hidden (True/False)
+HEADLESS = True  # If True Firefox will be hidden (True/False)
 
 
 # video options
