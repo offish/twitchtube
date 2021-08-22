@@ -32,6 +32,7 @@ def make_video(
     limit: int = LIMIT,
     # selenium
     profile_path: str = ROOT_PROFILE_PATH,
+    executable_path: str = EXECUTABLE_PATH,
     sleep: int = SLEEP,
     headless: bool = HEADLESS,
     debug: bool = DEBUG,
@@ -190,12 +191,12 @@ def make_video(
                 log.info("No Firefox profile path given, skipping upload")
 
             else:
-                upload = Upload(profile_path, sleep, headless, debug)
+                upload = Upload(profile_path, executable_path, sleep, headless, debug)
 
                 log.info("Trying to upload video to YouTube")
 
                 try:
-                    was_uploaded, video_id = upload.upload(config)
+                    was_uploaded, video_id = upload.upload(**config)
 
                     if was_uploaded:
                         log.info(f"{video_id} was successfully uploaded to YouTube")
@@ -204,6 +205,9 @@ def make_video(
                     log.error(
                         f"There was an error {e} when trying to upload to YouTube"
                     )
+
+                finally:
+                    upload.close()
 
     if delete_clips:
         log.info("Getting files to delete...")
