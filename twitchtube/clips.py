@@ -10,7 +10,7 @@ from .utils import format_blacklist, is_blacklisted
 def get_data(slug: str, oauth_token: str, client_id: str) -> dict:
     """
     Gets the data from a given slug,
-    returns a JSON respone from the Helix API endpoint
+    returns a JSON response from the Helix API endpoint
     """
     response = get("data", slug=slug, oauth_token=oauth_token, client_id=client_id)
 
