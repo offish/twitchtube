@@ -1,80 +1,78 @@
-from pathlib import Path
-from json import dump
-from glob import glob
 import os
-
-from twitchtube import __version__ as twitchtube_version
-from .exceptions import *
-from .logging import Log
-from .config import *
-from .utils import *
-from .clips import get_clips, download_clips
+from glob import glob
+from json import dump
+from pathlib import Path
 
 from moviepy.editor import VideoFileClip, concatenate_videoclips
 from opplast import Upload, __version__ as opplast_version
 
-log = Log()
+from twitchtube import __version__ as twitchtube_version
+from .clips import get_clips, download_clips
+from .config import *
+from .exceptions import *
+from .logging import Log as log
+from .utils import *
 
 
 # add language as param
 def make_video(
-    # required
-    data: list = DATA,
-    blacklist: list = BLACKLIST,
-    # other
-    path: str = get_path(),
-    check_version: bool = CHECK_VERSION,
-    # twitch
-    client_id: str = CLIENT_ID,
-    oauth_token: str = OAUTH_TOKEN,
-    period: int = PERIOD,
-    language: str = LANGUAGE,
-    limit: int = LIMIT,
-    # selenium
-    profile_path: str = ROOT_PROFILE_PATH,
-    executable_path: str = EXECUTABLE_PATH,
-    sleep: int = SLEEP,
-    headless: bool = HEADLESS,
-    debug: bool = DEBUG,
-    # video options
-    render_video: bool = RENDER_VIDEO,
-    file_name: str = FILE_NAME,
-    resolution: tuple = RESOLUTION,
-    frames: int = FRAMES,
-    video_length: float = VIDEO_LENGTH,
-    resize_clips: bool = RESIZE_CLIPS,
-    enable_intro: bool = ENABLE_INTRO,
-    resize_intro: bool = RESIZE_INTRO,
-    intro_path: str = INTRO_FILE_PATH,
-    enable_transition: bool = ENABLE_TRANSITION,
-    resize_transition: bool = RESIZE_TRANSITION,
-    transition_path: str = TRANSITION_FILE_PATH,
-    enable_outro: bool = ENABLE_OUTRO,
-    resize_outro: bool = RESIZE_OUTRO,
-    outro_path: str = OUTRO_FILE_PATH,
-    # other options
-    save_file: bool = SAVE_TO_FILE,
-    save_file_name: str = SAVE_FILE_NAME,
-    upload_video: bool = UPLOAD_TO_YOUTUBE,
-    delete_clips: bool = DELETE_CLIPS,
-    # youtube
-    title: str = TITLE,
-    description: str = DESCRIPTION,
-    thumbnail: str = THUMBNAIL,
-    tags: list = TAGS,
+        # required
+        data: list = DATA,
+        blacklist: list = BLACKLIST,
+        # other
+        path: str = get_path(),
+        check_version: bool = CHECK_VERSION,
+        # twitch
+        client_id: str = CLIENT_ID,
+        oauth_token: str = OAUTH_TOKEN,
+        period: int = PERIOD,
+        language: str = LANGUAGE,
+        limit: int = LIMIT,
+        # selenium
+        profile_path: str = ROOT_PROFILE_PATH,
+        executable_path: str = EXECUTABLE_PATH,
+        sleep: int = SLEEP,
+        headless: bool = HEADLESS,
+        debug: bool = DEBUG,
+        # video options
+        render_video: bool = RENDER_VIDEO,
+        file_name: str = FILE_NAME,
+        resolution: tuple = RESOLUTION,
+        frames: int = FRAMES,
+        video_length: float = VIDEO_LENGTH,
+        resize_clips: bool = RESIZE_CLIPS,
+        enable_intro: bool = ENABLE_INTRO,
+        resize_intro: bool = RESIZE_INTRO,
+        intro_path: str = INTRO_FILE_PATH,
+        enable_transition: bool = ENABLE_TRANSITION,
+        resize_transition: bool = RESIZE_TRANSITION,
+        transition_path: str = TRANSITION_FILE_PATH,
+        enable_outro: bool = ENABLE_OUTRO,
+        resize_outro: bool = RESIZE_OUTRO,
+        outro_path: str = OUTRO_FILE_PATH,
+        # other options
+        save_file: bool = SAVE_TO_FILE,
+        save_file_name: str = SAVE_FILE_NAME,
+        upload_video: bool = UPLOAD_TO_YOUTUBE,
+        delete_clips: bool = DELETE_CLIPS,
+        # youtube
+        title: str = TITLE,
+        description: str = DESCRIPTION,
+        thumbnail: str = THUMBNAIL,
+        tags: list = TAGS,
 ) -> None:
     if check_version:
         try:
 
             for project, version in zip(
-                [
-                    "twitchtube",
-                    "opplast",
-                ],
-                [
-                    twitchtube_version,
-                    opplast_version,
-                ],
+                    [
+                        "twitchtube",
+                        "opplast",
+                    ],
+                    [
+                        twitchtube_version,
+                        opplast_version,
+                    ],
             ):
                 current = get_current_version(project)
 
@@ -214,7 +212,7 @@ def make_video(
         files = glob(f"{path}/*.mp4")
 
         for file in files:
-            if not file.replace("\\", "/") == path + f"/{file_name}.mp4":
+            if file.replace("\\", "/") != path + f"/{file_name}.mp4":
                 try:
                     os.remove(file)
                     log.clip(f"Deleted {file.replace(path, '')}")
@@ -240,20 +238,20 @@ def add_clip(path: str, resolution: tuple, resize: bool = True) -> VideoFileClip
 
 
 def render(
-    path: str,
-    file_name: str,
-    resolution: tuple,
-    frames: int,
-    resize_clips: bool,
-    enable_intro: bool,
-    resize_intro: bool,
-    intro_path: str,
-    enable_transition: bool,
-    resize_transition: bool,
-    transition_path: str,
-    enable_outro: bool,
-    resize_outro: bool,
-    outro_path: str,
+        path: str,
+        file_name: str,
+        resolution: tuple,
+        frames: int,
+        resize_clips: bool,
+        enable_intro: bool,
+        resize_intro: bool,
+        intro_path: str,
+        enable_transition: bool,
+        resize_transition: bool,
+        transition_path: str,
+        enable_outro: bool,
+        resize_outro: bool,
+        outro_path: str,
 ) -> None:
     """
     Concatenates a video with given path.
@@ -265,34 +263,28 @@ def render(
     video = []
 
     if enable_intro:
-        video.append(add_clip(intro_path, resolution, resize_intro == True))
-
-    number = 0
+        video.append(add_clip(intro_path, resolution, resize_intro))
 
     clips = get_clip_paths(path)
 
-    for clip in clips:
+    for number, clip in enumerate(clips):
 
         # Don't add transition if it's the first or last clip
-        if enable_transition and not (number == 0 or number == len(clips)):
-            video.append(
-                add_clip(transition_path, resolution, resize_transition == True)
-            )
+        if enable_transition and number not in [0, len(clips)]:
+            video.append(add_clip(transition_path, resolution, resize_transition))
 
-        video.append(add_clip(clip, resolution, resize_clips == True))
+        video.append(add_clip(clip, resolution, resize_clips))
 
         # Just so we get cleaner logging
         name = clip.replace(path, "").replace("_", " ").replace("\\", "")
 
         log.info(f"Added {name} to be rendered")
 
-        number += 1
-
         del clip
         del name
 
     if enable_outro:
-        video.append(add_clip(outro_path, resolution, resize_outro == True))
+        video.append(add_clip(outro_path, resolution, resize_outro))
 
     final = concatenate_videoclips(video, method="compose")
     final.write_videofile(
