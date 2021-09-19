@@ -2,7 +2,7 @@ from datetime import date
 from random import choice
 from string import ascii_lowercase, digits
 
-from requests import get as rget
+import requests
 
 from .api import get
 from .config import CLIP_PATH
@@ -31,7 +31,7 @@ def get_description(description: str, names: list) -> str:
 
 def get_current_version(project: str) -> str:
     txt = '__version__ = "'
-    response = rget(
+    response = requests.get(
         f"https://raw.githubusercontent.com/offish/{project}/master/{project}/__init__.py"
     ).text
     response = response[response.index(txt):].replace(txt, "")
