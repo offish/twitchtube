@@ -1,19 +1,17 @@
-from pathlib import Path
-from json import dump
-from glob import glob
 import os
-
-from twitchtube import __version__ as twitchtube_version
-from .exceptions import *
-from .logging import Log
-from .config import *
-from .utils import *
-from .clips import get_clips, download_clips
+from glob import glob
+from json import dump
+from pathlib import Path
 
 from moviepy.editor import VideoFileClip, concatenate_videoclips
 from opplast import Upload, __version__ as opplast_version
 
-log = Log()
+from twitchtube import __version__ as twitchtube_version
+from .clips import get_clips, download_clips
+from .config import *
+from .exceptions import *
+from .logging import Log as log
+from .utils import *
 
 
 # add language as param
@@ -111,12 +109,10 @@ def make_video(
     if did_remove:
         log.info("Data included blacklisted content and was removed")
 
-    data = convert_name_to_ids(data, oauth_token=oauth_token, client_id=client_id)
+    data = name_to_ids(data, oauth_token=oauth_token, client_id=client_id)
 
     # first we get all the clips for every entry in data
-    for entry in data:
-        category, id_, name = entry
-
+    for category, id_, name in data:
         # so we dont add the same clip twice
         new_clips, new_ids, new_titles = get_clips(
             blacklist,
@@ -214,7 +210,7 @@ def make_video(
         files = glob(f"{path}/*.mp4")
 
         for file in files:
-            if not file.replace("\\", "/") == path + f"/{file_name}.mp4":
+            if file.replace("\\", "/") != path + f"/{file_name}.mp4":
                 try:
                     os.remove(file)
                     log.clip(f"Deleted {file.replace(path, '')}")
@@ -265,34 +261,28 @@ def render(
     video = []
 
     if enable_intro:
-        video.append(add_clip(intro_path, resolution, resize_intro == True))
-
-    number = 0
+        video.append(add_clip(intro_path, resolution, resize_intro))
 
     clips = get_clip_paths(path)
 
-    for clip in clips:
+    for number, clip in enumerate(clips):
 
         # Don't add transition if it's the first or last clip
-        if enable_transition and not (number == 0 or number == len(clips)):
-            video.append(
-                add_clip(transition_path, resolution, resize_transition == True)
-            )
+        if enable_transition and number not in [0, len(clips)]:
+            video.append(add_clip(transition_path, resolution, resize_transition))
 
-        video.append(add_clip(clip, resolution, resize_clips == True))
+        video.append(add_clip(clip, resolution, resize_clips))
 
         # Just so we get cleaner logging
         name = clip.replace(path, "").replace("_", " ").replace("\\", "")
 
         log.info(f"Added {name} to be rendered")
 
-        number += 1
-
         del clip
         del name
 
     if enable_outro:
-        video.append(add_clip(outro_path, resolution, resize_outro == True))
+        video.append(add_clip(outro_path, resolution, resize_outro))
 
     final = concatenate_videoclips(video, method="compose")
     final.write_videofile(

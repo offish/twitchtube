@@ -33,17 +33,22 @@ def log(color: int, sort: str, text: str) -> None:
 
 
 class Log:
-    def info(self, text: str):
+    @staticmethod
+    def info(text: str):
         log(f.GREEN, "info", text)
 
-    def error(self, text: str):
+    @staticmethod
+    def error(text: str):
         log(f.RED, "error", text)
 
-    def warn(self, text: str):
+    @staticmethod
+    def warn(text: str):
         log(f.YELLOW, "warn", text)
 
-    def clip(self, text: str):
+    @staticmethod
+    def clip(text: str):
         log(f.CYAN, "clip", text)
 
-    def debug(self, text: str):
+    @staticmethod
+    def debug(text: str):
         log(f.BLUE, "debug", text)

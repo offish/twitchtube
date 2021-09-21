@@ -19,7 +19,7 @@ BLACKLIST = [
 # twitch
 CLIENT_ID = ""  # Twitch Client ID
 OAUTH_TOKEN = ""  # Twitch OAuth Token
-PERIOD = 24  # how many hours since the clip's creation should've passed e.g. 24, 48 etc
+PERIOD = 24  # how many hours since the clip's creation should've passed e.g. 24, 48 etc 0 for all time
 LANGUAGE = "en"  # en, es, th etc.
 LIMIT = 100  # 1-100
 
@@ -36,9 +36,9 @@ RENDER_VIDEO = True  # If clips should be rendered into one video (True/False). 
 RESOLUTION = (
     720,
     1280,
-)  # Resoultion of the rendered video (height, width) for 1080p: ((1080, 1920))
+)  # Resolution of the rendered video (height, width) for 1080p: ((1080, 1920))
 FRAMES = 30  # Frames per second (30/60)
-VIDEO_LENGTH = 10.5  # Minumum video length in minutes (doesn't always work)
+VIDEO_LENGTH = 10.5  # Minimum video length in minutes (doesn't always work)
 RESIZE_CLIPS = True  # Resize clips to fit RESOLUTION (True/False) If any RESIZE option is set to False the video might end up having a weird resolution
 FILE_NAME = "rendered"  # Name of the rendered video
 ENABLE_INTRO = False  # Enable (True/False)

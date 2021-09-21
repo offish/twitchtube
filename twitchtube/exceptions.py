@@ -1,10 +1,14 @@
-class InvalidCategory(Exception):
-    pass
+class TwitchTubeError(Exception):
+    """ General error class for TwitchTube."""
 
 
-class VideoPathAlreadyExists(Exception):
-    pass
+class InvalidCategory(TwitchTubeError):
+    """ Error for when the specified category is invalid """
 
 
-class NoClipsFound(Exception):
-    pass
+class VideoPathAlreadyExists(TwitchTubeError):
+    """ Error for when a path already exists. """
+
+
+class NoClipsFound(TwitchTubeError):
+    """ Error for when no clips are found. """

@@ -1,20 +1,16 @@
 import datetime
-from math import ceil
-from json import dump
-import urllib.request
 import re
+import urllib.request
 
-from .logging import Log
-from .utils import format_blacklist, is_blacklisted
 from .api import get
-
-log = Log()
+from .logging import Log as log
+from .utils import format_blacklist, is_blacklisted
 
 
 def get_data(slug: str, oauth_token: str, client_id: str) -> dict:
     """
     Gets the data from a given slug,
-    returns a JSON respone from the Helix API endpoint
+    returns a JSON response from the Helix API endpoint
     """
     response = get("data", slug=slug, oauth_token=oauth_token, client_id=client_id)
 
@@ -100,26 +96,24 @@ def get_clips(
     Gets the top clips for given game, returns JSON response
     from the Helix API endpoint.
     """
-    data = {}
-    new_ids = []
-    new_titles = []
-
     headers = {"Accept": "application/vnd.twitchtv.v5+json", "Client-ID": client_id}
 
     # params = {"period": period, "limit": limit}
     params = {
-        "ended_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
-        "started_at": (
-            datetime.datetime.now(datetime.timezone.utc)
-            - datetime.timedelta(hours=period)
-        ).isoformat(),
         "first": limit,
     }
 
-    if category == "channel":
-        params["broadcaster_id"] = id_
-    else:
-        params["game_id"] = id_
+    if period:
+        params = {
+            **params,
+            "ended_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+            "started_at": (
+                datetime.datetime.now(datetime.timezone.utc)
+                - datetime.timedelta(hours=period)
+            ).isoformat(),
+        }
+
+    params["broadcaster_id" if category == "channel" else "game_id"] = id_
 
     log.info(f"Getting clips for {category} {name}")
 
@@ -129,17 +123,18 @@ def get_clips(
         if response.get("error") == "Internal Server Error":
             # the error is twitch's fault, we try again
             get_clips(
-                blacklist,
-                category,
-                name,
-                path,
-                seconds,
-                ids,
-                client_id,
-                oauth_token,
-                period,
-                language,
-                limit,
+                blacklist=blacklist,
+                category=category,
+                id_=id_,
+                name=name,
+                path=path,
+                seconds=seconds,
+                ids=ids,
+                client_id=client_id,
+                oauth_token=oauth_token,
+                period=period,
+                language=language,
+                limit=limit,
             )
 
         else:
@@ -150,6 +145,10 @@ def get_clips(
     formatted_blacklist = format_blacklist(blacklist, oauth_token, client_id)
 
     if "data" in response:
+        data = {}
+        new_ids = []
+        new_titles = []
+
         for clip in response["data"]:
             clip_id = clip["id"]
             duration = clip["duration"]
@@ -183,12 +182,9 @@ def download_clips(data: dict, path: str, oauth_token: str, client_id: str) -> l
     """
     names = []
 
-    for clip in data:
-        download_clip(data[clip]["url"], path, oauth_token, client_id)
+    for clip, value in data.items():
+        download_clip(value["url"], path, oauth_token, client_id)
+        names.append(data[clip]["display_name"])
 
-        name = data[clip]["display_name"]
-
-        names.append(name)
-
-    log.info(f"Downloaded {len(data)} clips from this batch.\n")
+    log.info(f"Downloaded {len(data)} clips from this batch\n")
     return names
