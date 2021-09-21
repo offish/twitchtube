@@ -16,63 +16,63 @@ from .utils import *
 
 # add language as param
 def make_video(
-        # required
-        data: list = DATA,
-        blacklist: list = BLACKLIST,
-        # other
-        path: str = get_path(),
-        check_version: bool = CHECK_VERSION,
-        # twitch
-        client_id: str = CLIENT_ID,
-        oauth_token: str = OAUTH_TOKEN,
-        period: int = PERIOD,
-        language: str = LANGUAGE,
-        limit: int = LIMIT,
-        # selenium
-        profile_path: str = ROOT_PROFILE_PATH,
-        executable_path: str = EXECUTABLE_PATH,
-        sleep: int = SLEEP,
-        headless: bool = HEADLESS,
-        debug: bool = DEBUG,
-        # video options
-        render_video: bool = RENDER_VIDEO,
-        file_name: str = FILE_NAME,
-        resolution: tuple = RESOLUTION,
-        frames: int = FRAMES,
-        video_length: float = VIDEO_LENGTH,
-        resize_clips: bool = RESIZE_CLIPS,
-        enable_intro: bool = ENABLE_INTRO,
-        resize_intro: bool = RESIZE_INTRO,
-        intro_path: str = INTRO_FILE_PATH,
-        enable_transition: bool = ENABLE_TRANSITION,
-        resize_transition: bool = RESIZE_TRANSITION,
-        transition_path: str = TRANSITION_FILE_PATH,
-        enable_outro: bool = ENABLE_OUTRO,
-        resize_outro: bool = RESIZE_OUTRO,
-        outro_path: str = OUTRO_FILE_PATH,
-        # other options
-        save_file: bool = SAVE_TO_FILE,
-        save_file_name: str = SAVE_FILE_NAME,
-        upload_video: bool = UPLOAD_TO_YOUTUBE,
-        delete_clips: bool = DELETE_CLIPS,
-        # youtube
-        title: str = TITLE,
-        description: str = DESCRIPTION,
-        thumbnail: str = THUMBNAIL,
-        tags: list = TAGS,
+    # required
+    data: list = DATA,
+    blacklist: list = BLACKLIST,
+    # other
+    path: str = get_path(),
+    check_version: bool = CHECK_VERSION,
+    # twitch
+    client_id: str = CLIENT_ID,
+    oauth_token: str = OAUTH_TOKEN,
+    period: int = PERIOD,
+    language: str = LANGUAGE,
+    limit: int = LIMIT,
+    # selenium
+    profile_path: str = ROOT_PROFILE_PATH,
+    executable_path: str = EXECUTABLE_PATH,
+    sleep: int = SLEEP,
+    headless: bool = HEADLESS,
+    debug: bool = DEBUG,
+    # video options
+    render_video: bool = RENDER_VIDEO,
+    file_name: str = FILE_NAME,
+    resolution: tuple = RESOLUTION,
+    frames: int = FRAMES,
+    video_length: float = VIDEO_LENGTH,
+    resize_clips: bool = RESIZE_CLIPS,
+    enable_intro: bool = ENABLE_INTRO,
+    resize_intro: bool = RESIZE_INTRO,
+    intro_path: str = INTRO_FILE_PATH,
+    enable_transition: bool = ENABLE_TRANSITION,
+    resize_transition: bool = RESIZE_TRANSITION,
+    transition_path: str = TRANSITION_FILE_PATH,
+    enable_outro: bool = ENABLE_OUTRO,
+    resize_outro: bool = RESIZE_OUTRO,
+    outro_path: str = OUTRO_FILE_PATH,
+    # other options
+    save_file: bool = SAVE_TO_FILE,
+    save_file_name: str = SAVE_FILE_NAME,
+    upload_video: bool = UPLOAD_TO_YOUTUBE,
+    delete_clips: bool = DELETE_CLIPS,
+    # youtube
+    title: str = TITLE,
+    description: str = DESCRIPTION,
+    thumbnail: str = THUMBNAIL,
+    tags: list = TAGS,
 ) -> None:
     if check_version:
         try:
 
             for project, version in zip(
-                    [
-                        "twitchtube",
-                        "opplast",
-                    ],
-                    [
-                        twitchtube_version,
-                        opplast_version,
-                    ],
+                [
+                    "twitchtube",
+                    "opplast",
+                ],
+                [
+                    twitchtube_version,
+                    opplast_version,
+                ],
             ):
                 current = get_current_version(project)
 
@@ -109,12 +109,10 @@ def make_video(
     if did_remove:
         log.info("Data included blacklisted content and was removed")
 
-    data = convert_name_to_ids(data, oauth_token=oauth_token, client_id=client_id)
+    data = name_to_ids(data, oauth_token=oauth_token, client_id=client_id)
 
     # first we get all the clips for every entry in data
-    for entry in data:
-        category, id_, name = entry
-
+    for category, id_, name in data:
         # so we dont add the same clip twice
         new_clips, new_ids, new_titles = get_clips(
             blacklist,
@@ -238,20 +236,20 @@ def add_clip(path: str, resolution: tuple, resize: bool = True) -> VideoFileClip
 
 
 def render(
-        path: str,
-        file_name: str,
-        resolution: tuple,
-        frames: int,
-        resize_clips: bool,
-        enable_intro: bool,
-        resize_intro: bool,
-        intro_path: str,
-        enable_transition: bool,
-        resize_transition: bool,
-        transition_path: str,
-        enable_outro: bool,
-        resize_outro: bool,
-        outro_path: str,
+    path: str,
+    file_name: str,
+    resolution: tuple,
+    frames: int,
+    resize_clips: bool,
+    enable_intro: bool,
+    resize_intro: bool,
+    intro_path: str,
+    enable_transition: bool,
+    resize_transition: bool,
+    transition_path: str,
+    enable_outro: bool,
+    resize_outro: bool,
+    outro_path: str,
 ) -> None:
     """
     Concatenates a video with given path.
