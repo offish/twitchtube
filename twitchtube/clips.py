@@ -79,18 +79,18 @@ def download_clip(clip: str, basepath: str, oauth_token: str, client_id: str) ->
 
 
 def get_clips(
-        blacklist: list,
-        category: str,
-        id_: str,
-        name: str,
-        path: str,
-        seconds: float,
-        ids: list,
-        client_id: str,
-        oauth_token: str,
-        period: int,
-        language: str,
-        limit: int,
+    blacklist: list,
+    category: str,
+    id_: str,
+    name: str,
+    path: str,
+    seconds: float,
+    ids: list,
+    client_id: str,
+    oauth_token: str,
+    period: int,
+    language: str,
+    limit: int,
 ) -> (dict, list, list):
     """
     Gets the top clips for given game, returns JSON response
@@ -100,18 +100,20 @@ def get_clips(
 
     # params = {"period": period, "limit": limit}
     params = {
-        "ended_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
-        "started_at": (
-                datetime.datetime.now(datetime.timezone.utc)
-                - datetime.timedelta(hours=period)
-        ).isoformat(),
         "first": limit,
     }
 
-    if category == "channel":
-        params["broadcaster_id"] = id_
-    else:
-        params["game_id"] = id_
+    if period:
+        params = {
+            **params,
+            "ended_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+            "started_at": (
+                datetime.datetime.now(datetime.timezone.utc)
+                - datetime.timedelta(hours=period)
+            ).isoformat(),
+        }
+
+    params["broadcaster_id" if category == "channel" else "game_id"] = id_
 
     log.info(f"Getting clips for {category} {name}")
 
@@ -155,9 +157,9 @@ def get_clips(
                 break
 
             if (
-                    clip_id not in ids
-                    and not is_blacklisted(clip, formatted_blacklist)
-                    and (language == clip["language"] or not language)
+                clip_id not in ids
+                and not is_blacklisted(clip, formatted_blacklist)
+                and (language == clip["language"] or not language)
             ):
                 data[clip["id"]] = {
                     "url": clip["url"],
@@ -182,10 +184,7 @@ def download_clips(data: dict, path: str, oauth_token: str, client_id: str) -> l
 
     for clip, value in data.items():
         download_clip(value["url"], path, oauth_token, client_id)
+        names.append(data[clip]["display_name"])
 
-        name = data[clip]["display_name"]
-
-        names.append(name)
-
-    log.info(f"Downloaded {len(data)} clips from this batch.\n")
+    log.info(f"Downloaded {len(data)} clips from this batch\n")
     return names
