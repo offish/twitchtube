@@ -1,12 +1,12 @@
 from datetime import date
-from string import ascii_lowercase, digits
 from random import choice
+from string import ascii_lowercase, digits
+
+import requests
 
 from .api import get
-from .exceptions import InvalidCategory
 from .config import CLIP_PATH
-
-from requests import get as rget
+from .exceptions import InvalidCategory
 
 
 def get_date() -> str:
@@ -31,22 +31,22 @@ def get_description(description: str, names: list) -> str:
 
 def get_current_version(project: str) -> str:
     txt = '__version__ = "'
-    response = rget(
+    response = requests.get(
         f"https://raw.githubusercontent.com/offish/{project}/master/{project}/__init__.py"
     ).text
-    response = response[response.index(txt) :].replace(txt, "")
+    response = response[response.index(txt):].replace(txt, "")
 
     return response[: response.index('"\n')].replace('"', "")
 
 
 def create_video_config(
-    path: str,
-    file_name: str,
-    title: str,
-    description: str,
-    thumbnail: str,
-    tags: list,
-    names: list,
+        path: str,
+        file_name: str,
+        title: str,
+        description: str,
+        thumbnail: str,
+        tags: list,
+        names: list,
 ) -> dict:
     return {
         "file": f"{path}/{file_name}.mp4",
@@ -58,10 +58,10 @@ def create_video_config(
 
 
 def get_category(category: str) -> str:
-    if category == "g" or category == "game":
+    if category in {"g", "game"}:
         return "game"
 
-    if category == "c" or category == "channel":
+    if category in {"c", "channel"}:
         return "channel"
 
     raise InvalidCategory(
@@ -135,14 +135,10 @@ def format_blacklist(blacklist: list, oauth_token: str, client_id: str) -> list:
 
 
 def is_blacklisted(clip: dict, blacklist: list) -> bool:
-    if "broadcaster_id" in clip:
-        if "channel " + clip["broadcaster_id"].lower() in [
-            i.lower() for i in blacklist
-        ]:
-            return True
+    if "broadcaster_id" in clip and "channel " + clip["broadcaster_id"].lower() in [i.lower() for i in blacklist]:
+        return True
 
-    if clip.get("game_id"):
-        if "game " + clip["game_id"] in blacklist:
-            return True
+    if clip.get("game_id") and "game " + clip["game_id"] in blacklist:
+        return True
 
     return False
