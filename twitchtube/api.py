@@ -17,23 +17,13 @@ def data(slug: str, oauth_token: str, client_id: str) -> requests.Response:
     )
 
 
-def game(game_list: list, oauth_token: str, client_id: str) -> requests.Response:
-    # returns data about every specified name of the game (including it's id)
-    # e.g. [Minecraft] -> {'id': '27471', 'name': 'Minecraft',
-    #                      'box_art_url': 'https://static-cdn.jtvnw.net/ttv-boxart/Minecraft-{width}x{height}.jpg'}
+def helix(
+    category: str, data: list, oauth_token: str, client_id: str
+) -> requests.Response:
     return request(
-        "helix/games",
+        "helix/" + category,
         {"Authorization": "Bearer " + oauth_token, "Client-Id": client_id},
-        {"name": game_list}
-    )
-
-
-def user(user_list: list, oauth_token: str, client_id: str) -> requests.Response:
-    # just like game() but for users
-    return request(
-        "helix/users",
-        {"Authorization": "Bearer " + oauth_token, "Client-Id": client_id},
-        {"login": user_list}
+        {"login" if category == "users" else "name": data},
     )
 
 
