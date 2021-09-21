@@ -24,9 +24,7 @@ def get_path() -> str:
 
 
 def get_description(description: str, names: list) -> str:
-    for name in names:
-        description += f"https://twitch.tv/{name}\n"
-    return description
+    return description + "".join([f"https://twitch.tv/{name}\n" for name in names])
 
 
 def get_current_version(project: str) -> str:
@@ -34,19 +32,19 @@ def get_current_version(project: str) -> str:
     response = requests.get(
         f"https://raw.githubusercontent.com/offish/{project}/master/{project}/__init__.py"
     ).text
-    response = response[response.index(txt):].replace(txt, "")
+    response = response[response.index(txt) :].replace(txt, "")
 
     return response[: response.index('"\n')].replace('"', "")
 
 
 def create_video_config(
-        path: str,
-        file_name: str,
-        title: str,
-        description: str,
-        thumbnail: str,
-        tags: list,
-        names: list,
+    path: str,
+    file_name: str,
+    title: str,
+    description: str,
+    thumbnail: str,
+    tags: list,
+    names: list,
 ) -> dict:
     return {
         "file": f"{path}/{file_name}.mp4",
@@ -58,15 +56,12 @@ def create_video_config(
 
 
 def get_category(category: str) -> str:
-    if category in {"g", "game"}:
-        return "game"
+    if category not in ["g", "game", "c", "channel"]:
+        raise InvalidCategory(
+            category + ' is not supported. Use "g", "game", "c" or "channel"'
+        )
 
-    if category in {"c", "channel"}:
-        return "channel"
-
-    raise InvalidCategory(
-        category + ' is not supported. Use "g", "game", "c" or "channel"'
-    )
+    return "game" if category in ["g", "game"] else "channel"
 
 
 def get_category_and_name(entry: str) -> (str, str):
@@ -76,38 +71,36 @@ def get_category_and_name(entry: str) -> (str, str):
     return category, name
 
 
-def convert_name_to_ids(data: list, oauth_token: str, client_id: str) -> list:
-    # all data that is gets
-    new_data = []
-    users_to_check, games_to_check = [], []
-    user_info, game_info = [], []
+def name_to_ids(data: list, oauth_token: str, client_id: str) -> list:
+    result = []
 
-    for entry in data:
-        category, name = get_category_and_name(entry)
-        if category == "channel":
-            users_to_check.append(name)
-        elif category == "game":
-            games_to_check.append(name)
+    for category, helix_category, helix_name in [
+        (["channel", "c"], "users", "display_name"),
+        (["game", "g"], "games", "name"),
+    ]:
+        current_list = []
 
-    # if there are more than 100 entries in users_to_check or games_to_check, this *WILL NOT WORK*
-    if users_to_check:
-        user_info = get(
-            "user",
-            user_list=users_to_check,
-            oauth_token=oauth_token,
-            client_id=client_id,
-        )["data"]
-    if games_to_check:
-        game_info = get(
-            "game",
-            game_list=games_to_check,
-            oauth_token=oauth_token,
-            client_id=client_id,
-        )["data"]
+        for entry in data:
+            c, n = get_category_and_name(entry)
 
-    return [("channel", i["id"], i["display_name"]) for i in user_info] + [
-        ("game", i["id"], i["name"]) for i in game_info
-    ]
+            if c in category:
+                current_list.append(n)
+
+        if len(current_list) > 0:
+            info = (
+                get(
+                    "helix",
+                    category=helix_category,
+                    data=current_list,
+                    oauth_token=oauth_token,
+                    client_id=client_id,
+                ).get("data")
+                or []
+            )
+
+            result += [(category[0], i["id"], i[helix_name]) for i in info]
+
+    return result
 
 
 def remove_blacklisted(data: list, blacklist: list) -> (bool, list):
@@ -130,15 +123,10 @@ def remove_blacklisted(data: list, blacklist: list) -> (bool, list):
 
 
 def format_blacklist(blacklist: list, oauth_token: str, client_id: str) -> list:
-    formatted = convert_name_to_ids(blacklist, oauth_token, client_id)
-    return [f"{i[0]} {i[1]}" for i in formatted]
+    return [f"{i[0]} {i[1]}" for i in name_to_ids(blacklist, oauth_token, client_id)]
 
 
 def is_blacklisted(clip: dict, blacklist: list) -> bool:
-    if "broadcaster_id" in clip and "channel " + clip["broadcaster_id"].lower() in [i.lower() for i in blacklist]:
-        return True
-
-    if clip.get("game_id") and "game " + clip["game_id"] in blacklist:
-        return True
-
-    return False
+    return (
+        "broadcaster_id" in clip and "channel " + clip["broadcaster_id"] in blacklist
+    ) or ("game_id" in clip and "game " + clip["game_id"] in blacklist)
