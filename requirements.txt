@@ -1,5 +1,5 @@
 moviepy==1.0.3
 colorama~=0.4.4
-selenium
+selenium<4
 opplast~=1.0.7
 requests~=2.26.0
