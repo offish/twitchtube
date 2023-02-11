@@ -27,6 +27,7 @@ LIMIT = 100  # 1-100
 # selenium
 ROOT_PROFILE_PATH = r"C:/Users/USERNAME/AppData/Roaming/Mozilla/Firefox/Profiles/r4Nd0m.selenium"  # Path to the Firefox profile where you are logged into YouTube
 EXECUTABLE_PATH = r"geckodriver"
+FIREFOX_PATH = r"C:/Program Files/Mozilla Firefox/firefox.exe" #specify this if your gecko driver can't find firefox ("Expected browser binary location...")
 SLEEP = 3  # How many seconds Firefox should sleep for when uploading
 HEADLESS = True  # If True Firefox will be hidden (True/False)
 
