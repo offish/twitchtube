@@ -22,7 +22,7 @@ def make_video(
     data: list = DATA,
     blacklist: list = BLACKLIST,
     # other
-    path: str = get_path(),
+    path: str = "",
     check_version: bool = CHECK_VERSION,
     # twitch
     client_id: str = CLIENT_ID,
@@ -64,6 +64,7 @@ def make_video(
     thumbnail: str = THUMBNAIL,
     tags: list = TAGS,
 ) -> None:
+    path = get_path()
     if check_version:
         try:
 
