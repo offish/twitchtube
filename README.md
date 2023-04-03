@@ -11,6 +11,9 @@
 
 Automatically make video compilations of the most viewed Twitch clips, and upload them to YouTube using Python 3. 
 
+### twitchtube is currently being rewritten, which will include breaking changes
+Follow the changes [here](https://github.com/offish/twitchtube/tree/v2.0.0).
+
 ## Usage
 Example of making a video through terminal
 ```python
