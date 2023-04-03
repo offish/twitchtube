@@ -13,6 +13,8 @@ from .exceptions import *
 from .logging import Log as log
 from .utils import *
 
+from selenium.webdriver.firefox.options import Options
+
 
 # add language as param
 def make_video(
@@ -20,7 +22,7 @@ def make_video(
     data: list = DATA,
     blacklist: list = BLACKLIST,
     # other
-    path: str = get_path(),
+    path: str = "",
     check_version: bool = CHECK_VERSION,
     # twitch
     client_id: str = CLIENT_ID,
@@ -31,6 +33,7 @@ def make_video(
     # selenium
     profile_path: str = ROOT_PROFILE_PATH,
     executable_path: str = EXECUTABLE_PATH,
+    firefox_path: str = FIREFOX_PATH,
     sleep: int = SLEEP,
     headless: bool = HEADLESS,
     debug: bool = DEBUG,
@@ -61,6 +64,7 @@ def make_video(
     thumbnail: str = THUMBNAIL,
     tags: list = TAGS,
 ) -> None:
+    path = get_path()
     if check_version:
         try:
 
@@ -187,7 +191,13 @@ def make_video(
                 log.info("No Firefox profile path given, skipping upload")
 
             else:
-                upload = Upload(profile_path, executable_path, sleep, headless, debug)
+                if firefox_path != "":
+                    options = Options()
+                    options.binary_location = r"C:\Program Files\Mozilla Firefox\firefox.exe"
+
+                    upload = Upload(profile_path, executable_path, sleep, headless, debug, options=options)
+                else:
+                    upload = Upload(profile_path, executable_path, sleep, headless, debug)
 
                 log.info("Trying to upload video to YouTube")
 
