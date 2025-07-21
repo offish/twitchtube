@@ -1,42 +1,29 @@
 import requests
 
-local = locals()
 
+class TwitchAPI:
+    def __init__(self, client_id: str, oauth_token: str) -> None:
+        self.client_id = client_id
+        self.oauth_token = oauth_token
+        self.headers = {
+            "Authorization": f"Bearer {self.oauth_token}",
+            "Client-Id": self.client_id,
+        }
 
-def request(endpoint: str, headers: dict, params: dict) -> requests.Response:
-    return requests.get(
-        "https://api.twitch.tv/" + endpoint, headers=headers, params=params
-    )
+    def _get_request(self, endpoint: str, params: dict, **kwargs) -> dict:
+        url = f"https://api.twitch.tv/helix/{endpoint}"
+        response = requests.get(url, headers=self.headers, params=params, **kwargs)
+        response.raise_for_status()
 
-
-def data(slug: str, oauth_token: str, client_id: str) -> requests.Response:
-    return request(
-        "helix/clips",
-        {"Authorization": "Bearer " + oauth_token, "Client-Id": client_id},
-        {"id": slug},
-    )
-
-
-def helix(
-    category: str, data: list, oauth_token: str, client_id: str
-) -> requests.Response:
-    return request(
-        "helix/" + category,
-        {"Authorization": "Bearer " + oauth_token, "Client-Id": client_id},
-        {"login" if category == "users" else "name": data},
-    )
-
-
-def top_clips(headers: dict, params: dict, oauth_token: str) -> requests.Response:
-    headers.update({"Authorization": "Bearer " + oauth_token})
-    return request("helix/clips", headers, params)
-
-
-def get(name: str, **args) -> dict:
-    response = local[name](**args)
-
-    try:
         return response.json()
-    except SyntaxError:
-        # probably should remove this, but i imagine it's for python2.7 support? dunno
-        return response
+
+    def get_clip(self, slug: str) -> dict:
+        params = {"id": slug}
+        return self.get_clips(params=params)
+
+    def get_clips(self, **kwargs) -> dict:
+        return self._get_request("clips", **kwargs)
+
+    def get_helix_category(self, category: str, data: list) -> dict:
+        params = {"login" if category == "users" else "name": data}
+        return self._get_request(category, params)

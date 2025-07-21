@@ -1,40 +1,9 @@
-from datetime import date
-from random import choice
-from string import ascii_lowercase, digits
-
-import requests
-
 from .api import get
-from .config import CLIP_PATH
 from .exceptions import InvalidCategory
-
-
-def get_date() -> str:
-    """
-    Gets the current date and returns the date as a string.
-    """
-    return date.today().strftime("%b-%d-%Y")
-
-
-def get_path() -> str:
-    return CLIP_PATH.format(
-        get_date(),
-        "".join(choice(ascii_lowercase + digits) for _ in range(5)),
-    )
 
 
 def get_description(description: str, names: list) -> str:
     return description + "".join([f"https://twitch.tv/{name}\n" for name in names])
-
-
-def get_current_version(project: str) -> str:
-    txt = '__version__ = "'
-    response = requests.get(
-        f"https://raw.githubusercontent.com/offish/{project}/master/{project}/__init__.py"
-    ).text
-    response = response[response.index(txt) :].replace(txt, "")
-
-    return response[: response.index('"\n')].replace('"', "")
 
 
 def create_video_config(
